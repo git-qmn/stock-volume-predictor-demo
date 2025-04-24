@@ -1,6 +1,6 @@
 
 import streamlit as st
-st.set_page_config(page_title="Stock Volume Prediction", layout="wide")
+st.set_page_config(page_title="Earnings Volume Predictor", layout="wide")
 
 import pandas as pd
 import numpy as np
@@ -8,7 +8,7 @@ import joblib
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# ========== Load Model Artifacts ==========
+# ===== Load Model Artifacts =====
 @st.cache_resource
 def load_artifacts():
     model = joblib.load("model/volume_model.pkl")
@@ -18,7 +18,7 @@ def load_artifacts():
 
 model, scaler, selected_features = load_artifacts()
 
-# ========== Extract Financials from yfinance ==========
+# ===== Get Financial Ratios from yfinance =====
 def get_financial_ratios(ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
@@ -36,54 +36,67 @@ def get_financial_ratios(ticker):
             'intcov_ratio': info.get('ebitdaMargins', 0),
             'quick_ratio': info.get('quickRatio', 0),
             'curr_ratio': info.get('currentRatio', 0),
-            'at_turn': info.get('returnOnAssets', 0),  # reused proxy
+            'at_turn': info.get('returnOnAssets', 0),  # Proxy reuse
             'ptb': info.get('priceToBook', 0)
         }
         return pd.DataFrame([ratios])
     except:
         return None
 
-# ========== Tabs Setup ==========
-tabs = st.tabs(["🔮 Predict Volume", "📊 Financial Details", "🧠 Feature Insights"])
+# ===== Streamlit Tabs =====
+tabs = st.tabs([
+    "📊 Company Snapshot",
+    "🔮 Volume Prediction After Earnings",
+    "🧠 Model Insight"
+])
 
-# ========== PAGE 1: Predict Volume ==========
+# Ticker input shared across pages
+with st.sidebar:
+    ticker = st.text_input("Enter a stock ticker (e.g., AAPL)", value="ORCL").upper()
+
+# ===== Page 1: Company Snapshot =====
 with tabs[0]:
-    st.header("🔮 Predict Tomorrow's Trading Volume")
-    ticker = st.text_input("Enter Stock Ticker (e.g., AAPL)", value="ORCL").upper()
+    st.header("📊 Company Snapshot")
 
-    if st.button("Predict"):
+    if ticker:
+        stock = yf.Ticker(ticker)
+        info = stock.info
+
+        st.subheader(info.get('longName', ticker))
+        st.markdown(f"**Sector:** {info.get('sector', 'N/A')}  
+"
+                    f"**Industry:** {info.get('industry', 'N/A')}  
+"
+                    f"**Market Cap:** {info.get('marketCap', 'N/A'):,}  
+"
+                    f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
+
+        st.subheader("Recent Volume & Price")
+        hist = stock.history(period="1mo")
+        if not hist.empty:
+            st.line_chart(hist[['Volume', 'Close']])
+
+# ===== Page 2: Volume Prediction =====
+with tabs[1]:
+    st.header("🔮 Volume Prediction After Earnings")
+
+    if ticker:
         fin_df = get_financial_ratios(ticker)
         if fin_df is not None:
             try:
                 input_df = fin_df[selected_features]
                 input_scaled = scaler.transform(input_df)
                 prediction = model.predict(input_scaled)[0]
-                st.success(f"📈 Predicted Volume for Tomorrow: **{int(prediction):,} shares**")
+                st.success(f"📈 Predicted trading volume on the first market day after earnings release: **{int(prediction):,} shares**")
             except Exception as e:
                 st.error(f"Prediction failed: {e}")
         else:
-            st.warning("Couldn't fetch financials for this ticker.")
+            st.warning("Could not fetch fundamentals for this ticker.")
 
-# ========== PAGE 2: Ticker Info ==========
-with tabs[1]:
-    st.header("📊 Financial Snapshot")
-    if ticker:
-        stock = yf.Ticker(ticker)
-        info = stock.info
-
-        st.subheader(f"{info.get('longName', ticker)}")
-        st.markdown(f"**Sector:** {info.get('sector', 'N/A')}  \n"
-                    f"**Market Cap:** {info.get('marketCap', 'N/A'):,}  \n"
-                    f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
-
-        st.subheader("Recent Volume Trend")
-        hist = stock.history(period="1mo")
-        if not hist.empty:
-            st.line_chart(hist['Volume'])
-
-# ========== PAGE 3: Feature Importance ==========
+# ===== Page 3: Model Insight =====
 with tabs[2]:
-    st.header("🧠 Feature Contribution to Prediction")
+    st.header("🧠 Model Insight")
+
     importances = model.feature_importances_
     sorted_idx = np.argsort(importances)[::-1]
     sorted_features = np.array(selected_features)[sorted_idx]
@@ -92,5 +105,5 @@ with tabs[2]:
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.barh(sorted_features[::-1], sorted_importance[::-1])
     ax.set_xlabel("Importance")
-    ax.set_title("Feature Importances (Top to Bottom)")
+    ax.set_title("Feature Importances (Top → Bottom)")
     st.pyplot(fig)

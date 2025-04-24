@@ -8,7 +8,7 @@ import joblib
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# ===== Load Model Artifacts =====
+# Load Model Artifacts
 @st.cache_resource
 def load_artifacts():
     model = joblib.load("model/volume_model.pkl")
@@ -18,7 +18,7 @@ def load_artifacts():
 
 model, scaler, selected_features = load_artifacts()
 
-# ===== Get Financial Ratios from yfinance =====
+# Get Financial Ratios from yfinance
 def get_financial_ratios(ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
@@ -43,18 +43,18 @@ def get_financial_ratios(ticker):
     except:
         return None
 
-# ===== Streamlit Tabs =====
+# Streamlit Tabs
 tabs = st.tabs([
-    "📊 Company Snapshot",
-    "🔮 Volume Prediction After Earnings",
-    "🧠 Model Insight"
+    "Company Snapshot",
+    "Volume Prediction After Earnings",
+    "Model Insight"
 ])
 
 # Ticker input shared across pages
 with st.sidebar:
-    ticker = st.text_input("Enter a stock ticker (e.g., AAPL)", value="ORCL").upper()
+    ticker = st.text_input("Enter a stock ticker: ", value="ORCL").upper()
 
-# ===== Page 1: Company Snapshot =====
+# Page 1: Company Snapshot
 with tabs[0]:
     st.header("📊 Company Snapshot")
 

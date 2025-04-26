@@ -73,7 +73,7 @@ with tabs[0]:
         if not hist.empty:
             st.line_chart(hist[['Volume', 'Close']])
 
-# Page 2: Volume Prediction
+# Page 2: Volume Prediction After Earnings
 with tabs[1]:
     st.header("Volume Prediction After Earnings")
 
@@ -87,14 +87,48 @@ with tabs[1]:
 
                 input_df = fin_df[selected_features]
                 prediction = pipeline.predict(input_df)[0]
+
+                # Display company quick facts
+                stock = yf.Ticker(ticker)
+                info = stock.info
+
+                st.subheader(f"{info.get('longName', ticker)} ({ticker})")
+                st.write(f"**Sector:** {info.get('sector', 'N/A')}")
+                st.write(f"**Industry:** {info.get('industry', 'N/A')}")
+                st.write(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}")
+                st.write(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
+
+                st.divider()
+
+                # Display predicted volume
                 st.success(
                     f"Predicted trading volume on the first market day after earnings release: "
                     f"{int(prediction):,} shares"
                 )
+
+                # Add simple commentary based on prediction size
+                if prediction >= 50_000_000:
+                    st.info("High expected trading activity following earnings announcement.")
+                elif prediction >= 10_000_000:
+                    st.info("Moderate trading volume expected post-earnings.")
+                else:
+                    st.info("Low trading volume expected following earnings release.")
+
+                st.divider()
+
+                # Optional: Display historical volume chart
+                st.subheader("Recent Volume Trends")
+                hist = stock.history(period="1mo")
+                if not hist.empty:
+                    st.line_chart(hist['Volume'])
+                else:
+                    st.write("No historical volume data available.")
+
             except Exception as e:
                 st.error(f"Prediction failed: {e}")
         else:
             st.warning("Could not fetch financial fundamentals for this ticker.")
+
 
 # Page 3: Model Insight
 with tabs[2]:

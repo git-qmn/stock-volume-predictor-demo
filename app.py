@@ -81,7 +81,8 @@ with tabs[1]:
         fin_df = get_financial_ratios(ticker)
         if fin_df is not None:
             try:
-                input_df = fin_df[selected_features]
+                features_for_prediction = [feat for feat in selected_features if feat != 'Current Volume']
+                input_df = fin_df[features_for_prediction]
                 prediction = pipeline.predict(input_df)[0]
                 st.success(
                     f"Predicted trading volume on the first market day after earnings release: "

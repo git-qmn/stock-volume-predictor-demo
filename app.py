@@ -1,4 +1,3 @@
-
 import streamlit as st
 st.set_page_config(page_title="Earnings Volume Predictor", layout="wide")
 
@@ -8,17 +7,16 @@ import joblib
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# Load Model Artifacts
+# ===== Load Full Pipeline (Model + Scaler) =====
 @st.cache_resource
-def load_artifacts():
-    model = joblib.load("model/volume_model.pkl")
-    scaler = joblib.load("model/scaler.pkl")
-    selected_features = joblib.load("model/selected_features.pkl")
-    return model, scaler, selected_features
+def load_pipeline():
+    pipeline = joblib.load("model/random_forest_pipeline.pkl")
+    selected_features = pipeline.feature_names_in_
+    return pipeline, selected_features
 
-model, scaler, selected_features = load_artifacts()
+pipeline, selected_features = load_pipeline()
 
-# Get Financial Ratios from yfinance
+# ===== Get Financial Ratios from yfinance =====
 def get_financial_ratios(ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
@@ -43,18 +41,18 @@ def get_financial_ratios(ticker):
     except:
         return None
 
-# Streamlit Tabs
+# ===== Streamlit Tabs =====
 tabs = st.tabs([
-    "Company Snapshot",
-    "Volume Prediction After Earnings",
-    "Model Insight"
+    "📊 Company Snapshot",
+    "🔮 Volume Prediction After Earnings",
+    "🧠 Model Insight"
 ])
 
-# Ticker input shared across pages
+# ===== Shared Input: Ticker =====
 with st.sidebar:
-    ticker = st.text_input("Enter a stock ticker: ", value="ORCL").upper()
+    ticker = st.text_input("Enter a stock ticker (e.g., AAPL)", value="ORCL").upper()
 
-# Page 1: Company Snapshot
+# ===== Page 1: Company Snapshot =====
 with tabs[0]:
     st.header("📊 Company Snapshot")
 
@@ -63,13 +61,12 @@ with tabs[0]:
         info = stock.info
 
         st.subheader(info.get('longName', ticker))
-        st.markdown(f"**Sector:** {info.get('sector', 'N/A')}  
-"
-                    f"**Industry:** {info.get('industry', 'N/A')}  
-"
-                    f"**Market Cap:** {info.get('marketCap', 'N/A'):,}  
-"
-                    f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
+        st.markdown((
+            f"**Sector:** {info.get('sector', 'N/A')}  \n"
+            f"**Industry:** {info.get('industry', 'N/A')}  \n"
+            f"**Market Cap:** {info.get('marketCap', 'N/A'):,}  \n"
+            f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}"
+        ))
 
         st.subheader("Recent Volume & Price")
         hist = stock.history(period="1mo")
@@ -85,9 +82,11 @@ with tabs[1]:
         if fin_df is not None:
             try:
                 input_df = fin_df[selected_features]
-                input_scaled = scaler.transform(input_df)
-                prediction = model.predict(input_scaled)[0]
-                st.success(f"📈 Predicted trading volume on the first market day after earnings release: **{int(prediction):,} shares**")
+                prediction = pipeline.predict(input_df)[0]
+                st.success(
+                    f"📈 Predicted trading volume on the first market day after earnings release: "
+                    f"**{int(prediction):,} shares**"
+                )
             except Exception as e:
                 st.error(f"Prediction failed: {e}")
         else:
@@ -97,6 +96,8 @@ with tabs[1]:
 with tabs[2]:
     st.header("🧠 Model Insight")
 
+    # Get feature importances
+    model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
     importances = model.feature_importances_
     sorted_idx = np.argsort(importances)[::-1]
     sorted_features = np.array(selected_features)[sorted_idx]

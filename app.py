@@ -23,7 +23,7 @@ def get_financial_ratios(ticker):
 
     try:
         ratios = {
-            'EV/EBITDA': info.get('enterpriseValue', 0) / info.get('marketCap', 1),
+            'EV/EBITDA': info.get('enterpriseValue', 0) / info.get('marketCap', 1) if info.get('marketCap') else 0,
             'P/E Ratio': info.get('trailingPE', 0),
             'P/S Ratio': info.get('priceToSalesTrailing12Months', 0),
             'Net Margin': info.get('netMargins', 0),
@@ -51,7 +51,7 @@ tabs = st.tabs([
 # Sidebar: shared ticker input
 with st.sidebar:
     ticker = st.text_input("Enter a stock ticker (e.g., AAPL)", value="ORCL").upper()
-    st.caption("Note: Model was primarily trained on tech and growth stocks. Predictions for other sectors may have varied accuracy.")
+    st.caption("Note: Model trained mainly on tech stocks. Predictions for other sectors may have varied accuracy.")
 
 # Page 1: Company Snapshot
 with tabs[0]:
@@ -62,10 +62,17 @@ with tabs[0]:
         info = stock.info
 
         st.subheader(info.get('longName', ticker))
+
+        market_cap = info.get('marketCap', None)
+        if isinstance(market_cap, (int, float)):
+            market_cap_display = f"{market_cap:,}"
+        else:
+            market_cap_display = "N/A"
+
         st.markdown((
             f"**Sector:** {info.get('sector', 'N/A')}  \n"
             f"**Industry:** {info.get('industry', 'N/A')}  \n"
-            f"**Market Cap:** {info.get('marketCap', 'N/A'):,}  \n"
+            f"**Market Cap:** {market_cap_display}  \n"
             f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}"
         ))
 
@@ -86,15 +93,26 @@ with tabs[1]:
                     fin_df['Current Volume'] = 0
 
                 input_df = fin_df[selected_features]
+
+                # Fill any missing features with 0
+                input_df = input_df.fillna(0)
+
                 prediction = pipeline.predict(input_df)[0]
 
                 stock = yf.Ticker(ticker)
                 info = stock.info
 
                 st.subheader(f"{info.get('longName', ticker)} ({ticker})")
+
+                market_cap = info.get('marketCap', None)
+                if isinstance(market_cap, (int, float)):
+                    market_cap_display = f"{market_cap:,}"
+                else:
+                    market_cap_display = "N/A"
+
                 st.write(f"**Sector:** {info.get('sector', 'N/A')}")
                 st.write(f"**Industry:** {info.get('industry', 'N/A')}")
-                st.write(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}")
+                st.write(f"**Market Cap:** {market_cap_display}")
                 st.write(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
 
                 st.divider()

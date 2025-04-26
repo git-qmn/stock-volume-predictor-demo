@@ -7,7 +7,7 @@ import joblib
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# ===== Load Full Pipeline (Model + Scaler) =====
+# Load Full Pipeline (Model + Scaler) 
 @st.cache_resource
 def load_pipeline():
     pipeline = joblib.load("model/random_forest_pipeline.pkl")
@@ -16,7 +16,7 @@ def load_pipeline():
 
 pipeline, selected_features = load_pipeline()
 
-# ===== Get Financial Ratios from yfinance =====
+# Get Financial Ratios from yfinance
 def get_financial_ratios(ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
@@ -41,18 +41,18 @@ def get_financial_ratios(ticker):
     except Exception as e:
         return None
 
-# ===== Streamlit Tabs =====
+# Streamlit Tabs
 tabs = st.tabs([
     "Company Snapshot",
     "Volume Prediction After Earnings",
     "Model Insight"
 ])
 
-# ===== Shared Input: Ticker =====
+# Shared Input: Ticker
 with st.sidebar:
     ticker = st.text_input("Enter a stock ticker (e.g., AAPL)", value="ORCL").upper()
 
-# ===== Page 1: Company Snapshot =====
+# Page 1: Company Snapshot 
 with tabs[0]:
     st.header("Company Snapshot")
 
@@ -73,7 +73,7 @@ with tabs[0]:
         if not hist.empty:
             st.line_chart(hist[['Volume', 'Close']])
 
-# ===== Page 2: Volume Prediction =====
+# Page 2: Volume Prediction
 with tabs[1]:
     st.header("Volume Prediction After Earnings")
 
@@ -96,7 +96,7 @@ with tabs[1]:
         else:
             st.warning("Could not fetch financial fundamentals for this ticker.")
 
-# ===== Page 3: Model Insight =====
+# Page 3: Model Insight
 with tabs[2]:
     st.header("Model Insight")
 

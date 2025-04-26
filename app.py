@@ -7,7 +7,7 @@ import joblib
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# Load Full Pipeline (Model + Scaler) 
+# Load full pipeline (model + scaler)
 @st.cache_resource
 def load_pipeline():
     pipeline = joblib.load("model/random_forest_pipeline.pkl")
@@ -16,7 +16,7 @@ def load_pipeline():
 
 pipeline, selected_features = load_pipeline()
 
-# Get Financial Ratios from yfinance
+# Get financial ratios from yfinance
 def get_financial_ratios(ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
@@ -34,25 +34,26 @@ def get_financial_ratios(ticker):
             'Interest Coverage': info.get('ebitdaMargins', 0),
             'Quick Ratio': info.get('quickRatio', 0),
             'Current Ratio': info.get('currentRatio', 0),
-            'Asset Turnover': info.get('returnOnAssets', 0),  # using ROA as a proxy
+            'Asset Turnover': info.get('returnOnAssets', 0),
             'Price-to-Book': info.get('priceToBook', 0)
         }
         return pd.DataFrame([ratios])
     except Exception as e:
         return None
 
-# Streamlit Tabs
+# Create tab structure
 tabs = st.tabs([
     "Company Snapshot",
     "Volume Prediction After Earnings",
     "Model Insight"
 ])
 
-# Shared Input: Ticker
+# Sidebar: shared ticker input
 with st.sidebar:
     ticker = st.text_input("Enter a stock ticker (e.g., AAPL)", value="ORCL").upper()
+    st.caption("Note: Model was primarily trained on tech and growth stocks. Predictions for other sectors may have varied accuracy.")
 
-# Page 1: Company Snapshot 
+# Page 1: Company Snapshot
 with tabs[0]:
     st.header("Company Snapshot")
 
@@ -81,14 +82,12 @@ with tabs[1]:
         fin_df = get_financial_ratios(ticker)
         if fin_df is not None:
             try:
-                # Add dummy Current Volume if missing
                 if 'Current Volume' not in fin_df.columns:
                     fin_df['Current Volume'] = 0
 
                 input_df = fin_df[selected_features]
                 prediction = pipeline.predict(input_df)[0]
 
-                # Display company quick facts
                 stock = yf.Ticker(ticker)
                 info = stock.info
 
@@ -100,13 +99,11 @@ with tabs[1]:
 
                 st.divider()
 
-                # Display predicted volume
                 st.success(
                     f"Predicted trading volume on the first market day after earnings release: "
                     f"{int(prediction):,} shares"
                 )
 
-                # Add simple commentary based on prediction size
                 if prediction >= 50_000_000:
                     st.info("High expected trading activity following earnings announcement.")
                 elif prediction >= 10_000_000:
@@ -116,7 +113,6 @@ with tabs[1]:
 
                 st.divider()
 
-                # Optional: Display historical volume chart
                 st.subheader("Recent Volume Trends")
                 hist = stock.history(period="1mo")
                 if not hist.empty:
@@ -129,12 +125,10 @@ with tabs[1]:
         else:
             st.warning("Could not fetch financial fundamentals for this ticker.")
 
-
 # Page 3: Model Insight
 with tabs[2]:
     st.header("Model Insight")
 
-    # Get feature importances
     model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
     importances = model.feature_importances_
     sorted_idx = np.argsort(importances)[::-1]

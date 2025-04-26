@@ -23,29 +23,29 @@ def get_financial_ratios(ticker):
 
     try:
         ratios = {
-            'evm': info.get('enterpriseValue', 0) / info.get('marketCap', 1),
-            'pe_exi': info.get('trailingPE', 0),
-            'ps': info.get('priceToSalesTrailing12Months', 0),
-            'npm': info.get('netMargins', 0),
-            'opmbd': info.get('operatingMargins', 0),
-            'roa': info.get('returnOnAssets', 0),
-            'roe': info.get('returnOnEquity', 0),
-            'de_ratio': info.get('debtToEquity', 0),
-            'intcov_ratio': info.get('ebitdaMargins', 0),
-            'quick_ratio': info.get('quickRatio', 0),
-            'curr_ratio': info.get('currentRatio', 0),
-            'at_turn': info.get('returnOnAssets', 0),  # Proxy reuse
-            'ptb': info.get('priceToBook', 0)
+            'EV/EBITDA': info.get('enterpriseValue', 0) / info.get('marketCap', 1),
+            'P/E Ratio': info.get('trailingPE', 0),
+            'P/S Ratio': info.get('priceToSalesTrailing12Months', 0),
+            'Net Margin': info.get('netMargins', 0),
+            'EBITDA Margin': info.get('operatingMargins', 0),
+            'Return on Assets': info.get('returnOnAssets', 0),
+            'Return on Equity': info.get('returnOnEquity', 0),
+            'Debt-to-Equity': info.get('debtToEquity', 0),
+            'Interest Coverage': info.get('ebitdaMargins', 0),
+            'Quick Ratio': info.get('quickRatio', 0),
+            'Current Ratio': info.get('currentRatio', 0),
+            'Asset Turnover': info.get('returnOnAssets', 0),  # using ROA as a proxy
+            'Price-to-Book': info.get('priceToBook', 0)
         }
         return pd.DataFrame([ratios])
-    except:
+    except Exception as e:
         return None
 
 # ===== Streamlit Tabs =====
 tabs = st.tabs([
-    "📊 Company Snapshot",
-    "🔮 Volume Prediction After Earnings",
-    "🧠 Model Insight"
+    "Company Snapshot",
+    "Volume Prediction After Earnings",
+    "Model Insight"
 ])
 
 # ===== Shared Input: Ticker =====
@@ -54,7 +54,7 @@ with st.sidebar:
 
 # ===== Page 1: Company Snapshot =====
 with tabs[0]:
-    st.header("📊 Company Snapshot")
+    st.header("Company Snapshot")
 
     if ticker:
         stock = yf.Ticker(ticker)
@@ -68,14 +68,14 @@ with tabs[0]:
             f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}"
         ))
 
-        st.subheader("Recent Volume & Price")
+        st.subheader("Recent Volume and Price")
         hist = stock.history(period="1mo")
         if not hist.empty:
             st.line_chart(hist[['Volume', 'Close']])
 
 # ===== Page 2: Volume Prediction =====
 with tabs[1]:
-    st.header("🔮 Volume Prediction After Earnings")
+    st.header("Volume Prediction After Earnings")
 
     if ticker:
         fin_df = get_financial_ratios(ticker)
@@ -84,17 +84,17 @@ with tabs[1]:
                 input_df = fin_df[selected_features]
                 prediction = pipeline.predict(input_df)[0]
                 st.success(
-                    f"📈 Predicted trading volume on the first market day after earnings release: "
-                    f"**{int(prediction):,} shares**"
+                    f"Predicted trading volume on the first market day after earnings release: "
+                    f"{int(prediction):,} shares"
                 )
             except Exception as e:
                 st.error(f"Prediction failed: {e}")
         else:
-            st.warning("Could not fetch fundamentals for this ticker.")
+            st.warning("Could not fetch financial fundamentals for this ticker.")
 
 # ===== Page 3: Model Insight =====
 with tabs[2]:
-    st.header("🧠 Model Insight")
+    st.header("Model Insight")
 
     # Get feature importances
     model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
@@ -106,5 +106,5 @@ with tabs[2]:
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.barh(sorted_features[::-1], sorted_importance[::-1])
     ax.set_xlabel("Importance")
-    ax.set_title("Feature Importances (Top → Bottom)")
+    ax.set_title("Feature Importances")
     st.pyplot(fig)

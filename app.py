@@ -308,22 +308,6 @@ elif page == "Volume Prediction":
                     st.markdown(f"**Volume Change vs Avg.:** N/A")
             # --- Recent Volume Chart ---
             st.subheader("Recent Volume Traded")
-            time_range = st.selectbox("Select time range:", options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], index=2)
-
-            time_mapping = {
-                "1D": ("1d", "5m"),
-                "5D": ("5d", "15m"),
-                "1M": ("1mo", "1d"),
-                "6M": ("6mo", "1d"),
-                "YTD": ("ytd", "1d"),
-                "1Y": ("1y", "1d"),
-                "5Y": ("5y", "1wk"),
-                "Max": ("max", "1mo")
-            }
-            period, interval = time_mapping.get(time_range, ("1mo", "1d"))
-    
-            hist = stock.history(period=period, interval=interval)
-
             
             fig_vol = go.Figure()
             fig_vol.add_trace(go.Bar(

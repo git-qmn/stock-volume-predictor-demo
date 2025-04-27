@@ -236,23 +236,24 @@ elif page == "Volume Prediction":
         st.markdown(f"**Open:** {info.get('open', 'N/A')}")
         st.markdown(f"**Bid:** {info.get('bid', 'N/A')}")
         st.markdown(f"**Ask:** {info.get('ask', 'N/A')}")
-
+    
     with detail_col2:
         st.markdown(f"**Day's Range:** {info.get('dayLow', 'N/A')} - {info.get('dayHigh', 'N/A')}")
         st.markdown(f"**52 Week Range:** {info.get('fiftyTwoWeekLow', 'N/A')} - {info.get('fiftyTwoWeekHigh', 'N/A')}")
         st.markdown(f"**Volume:** {info.get('volume', 'N/A'):,}" if info.get('volume') else "**Volume:** N/A")
         st.markdown(f"**Avg Volume:** {info.get('averageVolume', 'N/A'):,}" if info.get('averageVolume') else "**Avg Volume:** N/A")
-
+    
     with detail_col3:
-        st.markdown(f"**Beta:** {info.get('beta', 'N/A')}")
-        st.markdown(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
+        st.markdown(f"**Market Cap (intraday):** {info.get('marketCap', 'N/A'):,}" if info.get('marketCap') else "**Market Cap (intraday):** N/A")
+        st.markdown(f"**Beta (5Y Monthly):** {info.get('beta', 'N/A')}")
+        st.markdown(f"**PE Ratio (TTM):** {info.get('trailingPE', 'N/A')}")
         st.markdown(f"**EPS (TTM):** {info.get('trailingEps', 'N/A')}")
-        st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
-
+    
     with detail_col4:
         st.markdown(f"**Earnings Date:** {info.get('earningsDate', ['N/A'])[0] if isinstance(info.get('earningsDate'), list) else info.get('earningsDate', 'N/A')}")
-        st.markdown(f"**Ex-Dividend Date:** {info.get('exDividendDate', 'N/A')}")
         st.markdown(f"**Forward Dividend & Yield:** {info.get('dividendRate', 'N/A')} ({info.get('dividendYield', 'N/A')})")
+        st.markdown(f"**Ex-Dividend Date:** {info.get('exDividendDate', 'N/A')}")
+        st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
 
     st.divider()
 

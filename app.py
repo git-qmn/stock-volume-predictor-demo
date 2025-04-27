@@ -6,6 +6,7 @@ import numpy as np
 import joblib
 import yfinance as yf
 import plotly.graph_objs as go
+import matplotlib.pyplot as plt
 
 # Upload the test data
 testing_data = pd.read_csv("final_testing_set.csv")

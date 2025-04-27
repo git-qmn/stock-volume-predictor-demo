@@ -207,11 +207,15 @@ elif page == "Volume Prediction":
 
         st.divider()
 
-        # --- Historical Charts ---
-        st.subheader("Stock Price")
-
-        time_range = st.selectbox("Select time range for stock price:", options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], index=2)
-
+        # --- Recent Stock Price Chart ---
+        st.subheader("Recent Stock Price")
+        
+        time_range = st.selectbox(
+            "Select time range for stock price:", 
+            options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], 
+            index=2
+        )
+        
         time_mapping = {
             "1D": ("1d", "5m"),
             "5D": ("5d", "15m"),
@@ -223,20 +227,32 @@ elif page == "Volume Prediction":
             "Max": ("max", "1mo")
         }
         period, interval = time_mapping.get(time_range, ("1mo", "1d"))
-
+        
         hist = stock.history(period=period, interval=interval)
-
+        
         if not hist.empty:
             fig_price = go.Figure()
-            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='green')))
+            fig_price.add_trace(go.Scatter(
+                x=hist.index, 
+                y=hist['Close'], 
+                mode='lines', 
+                name='Close Price', 
+                line=dict(color='green')
+            ))
             fig_price.update_layout(
-            title="Recent Stock Price",
-            xaxis_title="Date",
-            yaxis_title="Close Price ($)",
-            height=400
-        )
-        st.plotly_chart(fig_price, use_container_width=True)
+                title="Recent Stock Price",
+                xaxis_title="Date",
+                yaxis_title="Close Price ($)",
+                height=400,
+                margin=dict(l=20, r=20, t=50, b=20),
+                xaxis_rangeslider_visible=False
+            )
+            st.plotly_chart(fig_price, use_container_width=True)
+        else:
+            st.warning("No stock price data available for this time range.")
+        
         st.divider()
+
         
     # --- Stock Details (fixed to match exactly 4-column layout you want) ---
     st.subheader("Stock Details")
@@ -309,16 +325,14 @@ elif page == "Volume Prediction":
 
             st.divider()
             # --- Recent Volume Chart ---
-            st.subheader("Recent Volume Traded")
+            st.subheader("Recent Trading Volume")
             
-            # Add time range dropdown
             volume_time_range = st.selectbox(
-                "Select time range for volume traded:",
-                options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"],
-                index=2  # Default is "1M"
+                "Select time range for trading volume:", 
+                options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], 
+                index=2
             )
             
-            # Mapping for yfinance periods and intervals
             volume_time_mapping = {
                 "1D": ("1d", "5m"),
                 "5D": ("5d", "15m"),
@@ -331,7 +345,6 @@ elif page == "Volume Prediction":
             }
             volume_period, volume_interval = volume_time_mapping.get(volume_time_range, ("1mo", "1d"))
             
-            # Re-fetch historical data based on selected time range
             hist_volume = stock.history(period=volume_period, interval=volume_interval)
             
             if not hist_volume.empty:
@@ -342,9 +355,8 @@ elif page == "Volume Prediction":
                     marker_color='lightblue',
                     name='Trading Volume'
                 ))
-                
                 fig_vol.update_layout(
-                    title=f"Recent Trading Volume",
+                    title="Recent Trading Volume",
                     xaxis_title="Date",
                     yaxis_title="Volume",
                     height=400,
@@ -356,6 +368,7 @@ elif page == "Volume Prediction":
                 st.warning("No volume data available for this time range.")
             
             st.divider()
+
 
     
             # --- Model Confidence ---

@@ -228,15 +228,14 @@ elif page == "Volume Prediction":
 
         if not hist.empty:
             fig_price = go.Figure()
-            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='blue')))
-            fig_price.update_layout(title="Recent Stock Price", xaxis_title="Date", yaxis_title="Close Price ($)", height=400)
-            st.plotly_chart(fig_price, use_container_width=True)
-
-            fig_vol = go.Figure()
-            fig_vol.add_trace(go.Bar(x=hist.index, y=hist['Volume'], name='Volume', marker_color='lightblue'))
-            fig_vol.update_layout(title="Recent Volume", xaxis_title="Date", yaxis_title="Volume", height=300)
-            st.plotly_chart(fig_vol, use_container_width=True)
-
+            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='royalblue')))
+            fig_price.update_layout(
+            title="Recent Stock Price",
+            xaxis_title="Date",
+            yaxis_title="Close Price ($)",
+            height=400
+        )
+    st.plotly_chart(fig_price, use_container_width=True)
         st.divider()
         
     # --- Stock Details (fixed to match exactly 4-column layout you want) ---

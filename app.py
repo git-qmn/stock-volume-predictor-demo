@@ -321,8 +321,8 @@ elif page == "Volume Prediction":
                 "Max": ("max", "1mo")
             }
             period, interval = time_mapping.get(time_range, ("1mo", "1d"))
-
-        hist = stock.history(period=period, interval=interval)
+    
+            hist = stock.history(period=period, interval=interval)
 
             
             fig_vol = go.Figure()

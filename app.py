@@ -54,7 +54,8 @@ def get_financial_ratios(ticker):
         return pd.DataFrame([ratios])
     except Exception:
         return None
-
+        
+# Page 1: Overview
 if page == "Overview":
     st.title("Volume Prediction After Financial Releases")
 
@@ -153,108 +154,91 @@ elif page == "Volume Prediction":
     st.title("Volume Prediction After Earnings Release")
 
     ticker = st.selectbox("Select a stock ticker for prediction:", tickers)
-    st.session_state['selected_ticker'] = ticker
 
     tab1, tab2 = st.tabs(["Company Snapshot", "Volume Prediction Summary"])
 
+    # --- Company Snapshot ---
     with tab1:
         st.header("Company Snapshot")
 
         stock = yf.Ticker(ticker)
         info = stock.info
 
-        # Display basic company information first
+        # --- Basic Company Info ---
         st.subheader(f"{info.get('longName', ticker)}")
-
+        
         col1, col2 = st.columns(2)
 
         with col1:
             st.markdown(f"**Sector:** {info.get('sector', 'N/A')}")
             st.markdown(f"**Industry:** {info.get('industry', 'N/A')}")
-            st.markdown(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}" if info.get('marketCap') else "N/A")
+            st.markdown(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}")
+            st.markdown(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
             st.markdown(f"**Forward P/E:** {info.get('forwardPE', 'N/A')}")
             st.markdown(f"**PEG Ratio:** {info.get('pegRatio', 'N/A')}")
+
         with col2:
             st.markdown(f"**Price/Sales:** {info.get('priceToSalesTrailing12Months', 'N/A')}")
             st.markdown(f"**Price/Book:** {info.get('priceToBook', 'N/A')}")
             st.markdown(f"**Beta:** {info.get('beta', 'N/A')}")
-            st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
-
-        st.divider()
-
-        # User selects time range
-        st.subheader("Recent Stock Performance")
-        period_options = {
-            "1D": "1d",
-            "5D": "5d",
-            "1M": "1mo",
-            "6M": "6mo",
-            "YTD": "ytd",
-            "1Y": "1y",
-            "5Y": "5y",
-            "All": "max"
-        }
-        selected_period = st.selectbox("Select time range:", list(period_options.keys()), index=5)
-        period = period_options[selected_period]
-
-        hist = stock.history(period=period)
-
-        if not hist.empty:
-            # Clean style
-            import matplotlib.dates as mdates
-            import matplotlib.ticker as ticker
-
-            # Closing Price Chart
-            st.markdown("#### Recent Stock Price")
-            fig1, ax1 = plt.subplots(figsize=(10, 4))
-            ax1.plot(hist.index, hist['Close'], color="royalblue", linewidth=2)
-            ax1.set_ylabel("Close Price ($)")
-            ax1.set_xlabel("")
-            ax1.set_title(f"{ticker} Closing Price", fontsize=14)
-            ax1.grid(True, linestyle="--", alpha=0.5)
-            ax1.xaxis.set_major_locator(mdates.AutoDateLocator())
-            fig1.autofmt_xdate()
-            st.pyplot(fig1)
-
-            st.divider()
-
-            # Volume Chart
-            st.markdown("#### Recent Volume")
-            fig2, ax2 = plt.subplots(figsize=(10, 4))
-            ax2.bar(hist.index, hist['Volume'], color="orange", alpha=0.7)
-            ax2.set_ylabel("Volume")
-            ax2.set_xlabel("")
-            ax2.set_title(f"{ticker} Volume Traded", fontsize=14)
-            ax2.grid(True, linestyle="--", alpha=0.5)
-            ax2.xaxis.set_major_locator(mdates.AutoDateLocator())
-            fig2.autofmt_xdate()
-            st.pyplot(fig2)
-
-        else:
-            st.warning("No historical stock data available for this ticker.")
-
-        st.divider()
-
-        # Detailed Stock Metrics in 2-column layout
-        st.subheader("Stock Details")
-
-        col3, col4 = st.columns(2)
-
-        with col3:
-            st.markdown(f"**Previous Close:** {info.get('previousClose', 'N/A')}")
-            st.markdown(f"**Open:** {info.get('open', 'N/A')}")
-            st.markdown(f"**Bid:** {info.get('bid', 'N/A')}")
-            st.markdown(f"**Ask:** {info.get('ask', 'N/A')}")
-            st.markdown(f"**Day's Range:** {info.get('dayLow', 'N/A')} - {info.get('dayHigh', 'N/A')}")
-            st.markdown(f"**52 Week Range:** {info.get('fiftyTwoWeekLow', 'N/A')} - {info.get('fiftyTwoWeekHigh', 'N/A')}")
-        with col4:
-            st.markdown(f"**Volume:** {info.get('volume', 'N/A')}")
-            st.markdown(f"**Avg Volume:** {info.get('averageVolume', 'N/A')}")
-            st.markdown(f"**Beta:** {info.get('beta', 'N/A')}")
-            st.markdown(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
             st.markdown(f"**EPS (TTM):** {info.get('trailingEps', 'N/A')}")
             st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
 
+        st.divider()
+
+        # --- Time Range Selection ---
+        st.subheader("Recent Stock Price")
+        time_range = st.selectbox(
+            "Select time range:", 
+            options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"],
+            index=2
+        )
+
+        # --- Map user selection to yfinance interval ---
+        time_mapping = {
+            "1D": ("1d", "5m"),
+            "5D": ("5d", "15m"),
+            "1M": ("1mo", "60m"),
+            "6M": ("6mo", "1d"),
+            "YTD": ("ytd", "1d"),
+            "1Y": ("1y", "1d"),
+            "5Y": ("5y", "1wk"),
+            "Max": ("max", "1mo")
+        }
+
+        period, interval = time_mapping.get(time_range, ("1mo", "1d"))
+
+        hist = stock.history(period=period, interval=interval)
+
+        if not hist.empty:
+            # --- Close Price Chart ---
+            fig_price = go.Figure()
+            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='royalblue')))
+            fig_price.update_layout(
+                title="Recent Stock Price",
+                xaxis_title="Date",
+                yaxis_title="Close Price ($)",
+                height=400,
+                margin=dict(l=20, r=20, t=50, b=20)
+            )
+            st.plotly_chart(fig_price, use_container_width=True)
+
+            # --- Volume Chart ---
+            st.subheader("Recent Volume Traded")
+            fig_volume = go.Figure()
+            fig_volume.add_trace(go.Bar(x=hist.index, y=hist['Volume'], name='Volume', marker_color='lightblue'))
+            fig_volume.update_layout(
+                title="Volume Over Time",
+                xaxis_title="Date",
+                yaxis_title="Volume",
+                height=300,
+                margin=dict(l=20, r=20, t=50, b=20)
+            )
+            st.plotly_chart(fig_volume, use_container_width=True)
+
+        st.divider()
+
+    # Volume Prediction Summary
     with tab2:
         st.header("Volume Prediction Summary")
 

@@ -27,7 +27,8 @@ with open("completed_tickers.txt", "r") as f:
 page = st.sidebar.radio("Navigate", [
     "Overview",
     "Volume Prediction",
-    "Feature Importance"
+    "Feature Importance",
+    "Top Stocks by Volume"
 ])
 
 # Get financial ratios from yfinance
@@ -56,14 +57,14 @@ def get_financial_ratios(ticker):
         return None
         
 # Page 1: Overview
-if page == "Overview":
+if page == "App Overview":
     st.title("Volume Prediction After Financial Releases")
 
     st.subheader("Team Members")
     st.markdown("""
-    - Quan Nguyen  
-    - Michael Webber  
-    - Jean Alvergnas  
+    - **Quan Nguyen**  
+    - **Michael Webber**  
+    - **Jean Alvergnas**  
     """)
 
     st.divider()
@@ -459,3 +460,33 @@ elif page == "Feature Importance":
     ax.set_xlabel("Importance")
     ax.set_title("Feature Importances")
     st.pyplot(fig)
+
+# Page 4: Top Stocks
+elif page == "Top Stocks by Volume":
+    st.title("Top 5 Traded Stocks in the Past 3 Months")
+    st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
+
+    tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
+    end_date = pd.to_datetime("today")
+    start_date = end_date - pd.Timedelta(days=90)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    volume_data = {}
+
+    for ticker in tickers:
+        df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
+        if not df.empty:
+            volume_in_millions = df['Volume'] / 1_000_000
+            ax.plot(df.index, volume_in_millions, label=ticker)
+            volume_data[ticker] = df[['Volume']]
+
+    ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Volume (Millions)")
+    ax.legend()
+    st.pyplot(fig)
+
+    st.subheader("📋 Last Few Entries for Each Stock's Volume Data")
+    for ticker, data in volume_data.items():
+        st.write(f"**{ticker}**")
+        st.dataframe(data.tail(5))

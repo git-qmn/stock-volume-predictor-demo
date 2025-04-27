@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import yfinance as yf
-import matplotlib.pyplot as plt
+import plotly.graph_objs as go
 
 # Upload the test data
 testing_data = pd.read_csv("final_testing_set.csv")

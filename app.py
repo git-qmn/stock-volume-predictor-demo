@@ -296,33 +296,69 @@ elif page == "Volume Prediction":
     
             st.divider()
     
-            # --- Mini Comparison Chart: Actual vs Predicted ---
+            # --- Recent Volume Chart ---
+            st.subheader("Recent Volume Traded")
+    
+            stock = yf.Ticker(ticker)
+            hist = stock.history(period="1mo", interval="1d")
+    
+            if not hist.empty:
+                fig_recent_vol = go.Figure()
+                fig_recent_vol.add_trace(go.Bar(
+                    x=hist.index,
+                    y=hist['Volume'],
+                    name='Volume',
+                    marker_color='lightblue'
+                ))
+                fig_recent_vol.update_layout(
+                    title="Recent Trading Volume",
+                    xaxis_title="Date",
+                    yaxis_title="Volume",
+                    height=300,
+                    margin=dict(l=30, r=30, t=40, b=30)
+                )
+                st.plotly_chart(fig_recent_vol, use_container_width=True)
+    
+            st.divider()
+    
+            # --- Actual vs Predicted: Clean Horizontal Bar ---
             st.subheader("Comparison: Actual vs Predicted Volume")
+    
             fig_comp = go.Figure()
-            fig_comp.add_trace(go.Bar(x=["Actual Volume"], y=[actual_volume], name="Actual", marker_color='green'))
-            fig_comp.add_trace(go.Bar(x=["Predicted Volume"], y=[prediction], name="Predicted", marker_color='blue'))
-            fig_comp.update_layout(barmode='group', height=400, margin=dict(l=30, r=30, t=30, b=30))
+            fig_comp.add_trace(go.Bar(
+                y=["Actual Volume", "Predicted Volume"],
+                x=[actual_volume, prediction],
+                orientation='h',
+                marker_color=['green', 'blue']
+            ))
+            fig_comp.update_layout(
+                height=300,
+                margin=dict(l=30, r=30, t=30, b=30),
+                xaxis_title="Volume",
+                yaxis_title="",
+                showlegend=False
+            )
             st.plotly_chart(fig_comp, use_container_width=True)
     
             st.divider()
     
-            # --- Model Confidence Display ---
+            # --- Model Confidence ---
             st.subheader("Model Confidence")
             st.metric("Estimated Model Confidence", "85%")
             st.caption("Note: Based on historical Mean Absolute Error (MAE) from testing data.")
     
             st.divider()
     
-            # --- Volume Compared to Average Trading Volume ---
+            # --- Volume Compared to Stock's Average Volume ---
             st.subheader("Volume vs. Stock Average Volume")
             avg_volume = info.get('averageVolume', None)
     
             if avg_volume:
                 volume_change = (prediction - avg_volume) / avg_volume * 100
                 st.write(f"**Predicted Volume Change vs Average:** {volume_change:.2f}%")
-                st.caption("Prediction compared to the stock's normal daily trading volume.")
+                st.caption("Comparison relative to typical daily trading activity.")
             else:
-                st.write("Average volume data not available for this stock.")
+                st.write("Average volume data not available.")
     
             st.divider()
     
@@ -331,7 +367,7 @@ elif page == "Volume Prediction":
             if prediction >= 50_000_000:
                 st.success("High expected trading activity following earnings announcement. Significant investor reaction anticipated.")
             elif prediction >= 10_000_000:
-                st.info("Moderate trading activity expected post-earnings. Potential for increased volatility.")
+                st.info("Moderate trading volume expected post-earnings. Potential for increased volatility.")
             else:
                 st.warning("Low expected trading activity after earnings. Market reaction may be muted.")
     
@@ -339,6 +375,7 @@ elif page == "Volume Prediction":
     
         else:
             st.warning("No recent prediction data available for this ticker.")
+
 
 # Page 3: Feature Importance
 elif page == "Feature Importance":

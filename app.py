@@ -255,7 +255,7 @@ elif page == "Volume Prediction":
 
         
     # --- Stock Details (fixed to match exactly 4-column layout you want) ---
-    st.subheader("Stock Details")
+        st.subheader("Stock Details")
         
         detail_col1, detail_col2, detail_col3, detail_col4 = st.columns(4)
         
@@ -282,8 +282,7 @@ elif page == "Volume Prediction":
             st.markdown(f"**Forward Dividend & Yield:** {info.get('dividendRate', 'N/A')} ({info.get('dividendYield', 'N/A')})")
             st.markdown(f"**Ex-Dividend Date:** {info.get('exDividendDate', 'N/A')}")
             st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
-    
-    
+
         st.divider()
 
 # --- Volume Prediction Summary ---

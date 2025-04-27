@@ -404,17 +404,34 @@ elif page == "Volume Prediction":
                 st.write("Average volume data not available.")
     
             st.divider()
-    
+
             # --- Business Interpretation ---
             st.subheader("Business Interpretation")
+            
             if prediction >= 50_000_000:
-                st.success("High expected trading activity following earnings announcement. Significant investor reaction anticipated.")
+                interpretation_text = (
+                    "High trading volume is expected following this earnings announcement, indicating a significant investor reaction.\n\n"
+                    "Such spikes often reflect strong sentiment shifts or major reassessments of company fundamentals.\n\n"
+                    "Traders and portfolio managers should be prepared for increased liquidity and potential price volatility."
+                )
             elif prediction >= 10_000_000:
-                st.info("Moderate trading volume expected post-earnings. Potential for increased volatility.")
+                interpretation_text = (
+                    "Moderate trading volume is anticipated after earnings, suggesting a measured investor response.\n\n"
+                    "While not as dramatic as major spikes, moderate volume increases can still offer trading opportunities, especially for event-driven or momentum strategies.\n\n"
+                    "Liquidity is expected to improve compared to normal trading days."
+                )
             else:
-                st.warning("Low expected trading activity after earnings. Market reaction may be muted.")
-    
+                interpretation_text = (
+                    "Low trading volume is forecasted following the earnings release, implying limited investor reaction.\n\n"
+                    "This could suggest that the results met expectations or that market participants are waiting for more information.\n\n"
+                    "Trading conditions may remain stable, with minimal volatility expected."
+                )
+            
+            # Display nicely
+            st.write(interpretation_text)
+            
             st.divider()
+
     
         else:
             st.warning("No recent prediction data available for this ticker.")

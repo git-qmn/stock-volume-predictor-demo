@@ -48,10 +48,15 @@ tabs = st.tabs([
     "Model Insight"
 ])
 
-# Sidebar: shared ticker input
+# Load tickers from file
+with open("completed_tickers.txt", "r") as f:
+    tickers = [line.strip() for line in f if line.strip()]
+
+# Sidebar for ticker selection
 with st.sidebar:
-    ticker = st.text_input("Enter a stock ticker (e.g., AAPL)", value="ORCL").upper()
-    st.caption("Note: Model trained mainly on tech stocks. Predictions for other sectors may have varied accuracy.")
+    ticker = st.selectbox("Select a stock ticker:", tickers)
+    st.caption("Note: Model trained mainly on tech stocks. Predictions for other sectors may have varied accuracy.")  
+    st.caption("Model trained on data up to October 2023. Predictions may not reflect current market conditions.")
 
 # Page 1: Company Snapshot
 with tabs[0]:

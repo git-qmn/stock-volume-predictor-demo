@@ -342,7 +342,7 @@ elif page == "Volume Prediction":
                 ))
                 
                 fig_vol.update_layout(
-                    title=f"Recent Trading Volume ({volume_time_range})",
+                    title=f"Recent Trading Volume",
                     xaxis_title="Date",
                     yaxis_title="Volume",
                     height=400,

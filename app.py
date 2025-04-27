@@ -288,14 +288,24 @@ elif page == "Volume Prediction":
     
             # --- Main Prediction Numbers ---
             st.subheader(f"{ticker} - Volume Prediction Details")
-            st.markdown(f"**Prediction Date:** {ticker_data['date'].values[0]}")
-            st.markdown(f"**Actual Volume:** {int(actual_volume):,}")
-            st.markdown(f"**Predicted Volume:** {int(prediction):,}")
-            st.markdown(f"**Difference:** {int(volume_diff):,} shares")
-            st.markdown(f"**Percent Difference:** {percent_diff:.2f}%")
-    
-            st.divider()
-    
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown(f"**Prediction Date:** {ticker_data['date'].values[0]}")
+                st.markdown(f"**Predicted Volume:** {int(prediction):,}")
+                st.markdown(f"**Percent Difference:** {percent_diff:.2f}%")
+            
+            with col2:
+                st.markdown(f"**Actual Volume:** {int(actual_volume):,}")
+                st.markdown(f"**Difference:** {int(volume_diff):,} shares")
+            
+                avg_volume = info.get('averageVolume', None)
+                if avg_volume:
+                    avg_vol_change = (prediction - avg_volume) / avg_volume * 100
+                    st.markdown(f"**Volume Change vs Avg.:** {avg_vol_change:.2f}%")
+                else:
+                    st.markdown(f"**Volume Change vs Avg.:** N/A")
             # --- Recent Volume Chart ---
             st.subheader("Recent Volume Traded")
     

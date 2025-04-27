@@ -273,35 +273,76 @@ elif page == "Volume Prediction":
     # --- Volume Prediction Summary ---
     with tab2:
         st.header("Volume Prediction Summary")
-
+    
         ticker_data = testing_data[testing_data['Ticker'] == ticker].sort_values('date', ascending=False).head(1)
-
+    
         if not ticker_data.empty:
             input_df = ticker_data[selected_features]
             input_df = input_df.fillna(0)
-
+    
             prediction = pipeline.predict(input_df)[0]
             actual_volume = ticker_data['predicted_volume'].values[0]
-
+    
             volume_diff = actual_volume - prediction
             percent_diff = (volume_diff / actual_volume) * 100 if actual_volume != 0 else 0
-
-            st.subheader(f"{ticker} - Volume Prediction Summary")
+    
+            st.subheader(f"{ticker} - Volume Prediction Details")
             st.write(f"**Prediction Date:** {ticker_data['date'].values[0]}")
             st.write(f"**Actual Volume:** {int(actual_volume):,}")
             st.write(f"**Predicted Volume:** {int(prediction):,}")
             st.write(f"**Difference:** {int(volume_diff):,} shares")
             st.write(f"**Percent Difference:** {percent_diff:.2f}%")
-
+    
             st.divider()
+    
+            # Category messages
             if prediction >= 50_000_000:
-                st.info("High expected trading activity following earnings announcement.")
+                st.success("High expected trading activity following earnings announcement.")
             elif prediction >= 10_000_000:
                 st.info("Moderate trading volume expected post-earnings.")
             else:
-                st.info("Low trading volume expected following earnings release.")
+                st.warning("Low trading volume expected following earnings release.")
+    
+            st.divider()
+    
+            # --- Volume Chart (migrated here) ---
+            st.subheader("Recent Volume Trend")
+    
+            time_range = st.selectbox(
+                "Select time range for volume chart:",
+                options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"],
+                index=2,
+                key="volume_time_range"  # 👈 add key to avoid Streamlit selectbox conflicts
+            )
+    
+            time_mapping = {
+                "1D": ("1d", "5m"),
+                "5D": ("5d", "15m"),
+                "1M": ("1mo", "1d"),
+                "6M": ("6mo", "1d"),
+                "YTD": ("ytd", "1d"),
+                "1Y": ("1y", "1d"),
+                "5Y": ("5y", "1wk"),
+                "Max": ("max", "1mo")
+            }
+            period, interval = time_mapping.get(time_range, ("1mo", "1d"))
+    
+            hist = stock.history(period=period, interval=interval)
+    
+            if not hist.empty:
+                fig_vol = go.Figure()
+                fig_vol.add_trace(go.Bar(x=hist.index, y=hist['Volume'], name='Volume', marker_color='lightblue'))
+                fig_vol.update_layout(
+                    title="Recent Trading Volume",
+                    xaxis_title="Date",
+                    yaxis_title="Volume",
+                    height=400,
+                    margin=dict(l=20, r=20, t=40, b=20)
+                )
+                st.plotly_chart(fig_vol, use_container_width=True)
+    
         else:
-            st.warning("No recent data available for this ticker.")
+            st.warning("No recent earnings prediction available for this ticker.")
 
 # Page 3: Feature Importance
 elif page == "Feature Importance":

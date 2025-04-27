@@ -208,7 +208,7 @@ elif page == "Volume Prediction":
         st.divider()
 
         # --- Historical Charts ---
-        st.subheader("Stock Price and Volume")
+        st.subheader("Stock Price")
 
         time_range = st.selectbox("Select time range:", options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], index=2)
 
@@ -228,7 +228,7 @@ elif page == "Volume Prediction":
 
         if not hist.empty:
             fig_price = go.Figure()
-            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='royalblue')))
+            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='green')))
             fig_price.update_layout(
             title="Recent Stock Price",
             xaxis_title="Date",

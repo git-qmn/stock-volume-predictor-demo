@@ -210,7 +210,7 @@ elif page == "Volume Prediction":
         # --- Historical Charts ---
         st.subheader("Stock Price")
 
-        time_range = st.selectbox("Select time range:", options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], index=2)
+        time_range = st.selectbox("Select time range for stock price:", options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], index=2)
 
         time_mapping = {
             "1D": ("1d", "5m"),
@@ -311,7 +311,7 @@ elif page == "Volume Prediction":
             
             # Add time range dropdown
             volume_time_range = st.selectbox(
-                "Select time range:",
+                "Select time range for volume traded:",
                 options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"],
                 index=2  # Default is "1M"
             )

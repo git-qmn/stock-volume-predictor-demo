@@ -308,27 +308,26 @@ elif page == "Volume Prediction":
                     st.markdown(f"**Volume Change vs Avg.:** N/A")
             # --- Recent Volume Chart ---
             st.subheader("Recent Volume Traded")
-    
-            stock = yf.Ticker(ticker)
-            hist = stock.history(period="1mo", interval="1d")
-    
-            if not hist.empty:
-                fig_recent_vol = go.Figure()
-                fig_recent_vol.add_trace(go.Bar(
-                    x=hist.index,
-                    y=hist['Volume'],
-                    name='Volume',
-                    marker_color='lightblue'
-                ))
-                fig_recent_vol.update_layout(
-                    title="Recent Trading Volume",
-                    xaxis_title="Date",
-                    yaxis_title="Volume",
-                    height=300,
-                    margin=dict(l=30, r=30, t=40, b=30)
-                )
-                st.plotly_chart(fig_recent_vol, use_container_width=True)
-    
+            
+            fig_vol = go.Figure()
+            fig_vol.add_trace(go.Bar(
+                x=hist.index, 
+                y=hist['Volume'], 
+                marker_color='lightblue',
+                name='Trading Volume'
+            ))
+            
+            fig_vol.update_layout(
+                title="Recent Trading Volume",
+                xaxis_title="Date",
+                yaxis_title="Volume",
+                height=400,
+                margin=dict(l=20, r=20, t=50, b=20),
+                xaxis_rangeslider_visible=False
+            )
+            
+            st.plotly_chart(fig_vol, use_container_width=True)
+                
             st.divider()
     
             # --- Actual vs Predicted: Clean Horizontal Bar ---

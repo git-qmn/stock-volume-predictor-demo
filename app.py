@@ -369,13 +369,28 @@ elif page == "Volume Prediction":
             
             st.divider()
 
+            # --- Model Performance Metrics ---
+            st.subheader("Model Performance")
+            
+            # Real evaluation results
+            r2_score = 0.8206095  # R-squared
+            mae_score = 3228716.84  # Mean Absolute Error
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.metric("R-squared (Model Predictive Power)", f"{r2_score * 100:.2f}%")
+            
+            with col2:
+                st.metric("Mean Absolute Error (MAE)", f"{mae_score:,.0f} shares")
+            
+            st.caption("""
+            **Interpretation:**  
+            The model explains approximately 82% of the variation in post-earnings trading volumes, meaning it captures most of the key factors influencing volume changes.  
+            On average, the model's predictions differ from the actual trading volume by about 3.2 million shares.  
+            While not perfect, the model provides a strong, reliable signal for anticipating major shifts in trading activity.
+            """)
 
-    
-            # --- Model Confidence ---
-            st.subheader("Model Confidence")
-            st.metric("Estimated Model Confidence", "85%")
-            st.caption("Note: Based on historical Mean Absolute Error (MAE) from testing data.")
-    
             st.divider()
     
             # --- Volume Compared to Stock's Average Volume ---

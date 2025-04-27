@@ -19,6 +19,17 @@ def load_pipeline():
 
 pipeline, selected_features = load_pipeline()
 
+# Load tickers from file
+with open("completed_tickers.txt", "r") as f:
+    tickers = [line.strip() for line in f if line.strip()]
+
+# Sidebar navigation
+page = st.sidebar.radio("Navigate", [
+    "Overview",
+    "Volume Prediction",
+    "Feature Importance"
+])
+
 # Get financial ratios from yfinance
 def get_financial_ratios(ticker):
     stock = yf.Ticker(ticker)
@@ -41,43 +52,54 @@ def get_financial_ratios(ticker):
             'Price-to-Book': info.get('priceToBook', 0)
         }
         return pd.DataFrame([ratios])
-    except Exception as e:
+    except Exception:
         return None
 
-# Create tab structure
-tabs = st.tabs([
-    "Project Overiew",
-    "Company Snapshot",
-    "Volume Prediction After Earnings",
-    "Model Insight"
-])
+# Page 1: Overview
+if page == "Overview":
+    st.title("Volume Prediction After Financial Releases")
 
-# Load tickers from file
-with open("completed_tickers.txt", "r") as f:
-    tickers = [line.strip() for line in f if line.strip()]
-
-# Sidebar for ticker selection
-with st.sidebar:
-    ticker = st.selectbox("Select a stock ticker:", tickers)
-    st.caption("Note: Model trained on tech stocks. Predictions for other sectors are not applicable.")  
-    st.caption("Model trained on data up to June 2024. Predictions will occur on the dates for earnings announcements between July and December of 2024.")
-
-# Page 0: Project Overview
-with tabs[0]:
-    st.header("Project Overview")
-    st.write("""
-        This project predicts the trading volume of stocks after earnings announcements using a Random Forest model.
-        The model was trained on historical data and includes various financial ratios as features.
-    """)
-    st.write("""
-        The model's performance was evaluated using metrics such as Mean Absolute Error (MAE) and R-squared (R²).
+    st.subheader("Team Members")
+    st.markdown("""
+    - Quan Nguyen  
+    - Michael Webber  
+    - Jean Alvergnas  
     """)
 
-# Page 1: Company Snapshot
-with tabs[1]:
-    st.header("Company Snapshot")
+    st.subheader("🎯 App Purpose")
+    st.write("""
+    This Streamlit app predicts the volume of stock traded on the day following a financial release.
+    It leverages past trading behavior and key financial ratios to anticipate activity after earnings announcements.
+    """)
 
-    if ticker:
+    st.subheader("💡 Why is This Valuable?")
+    st.markdown("""
+    - **Signal Strength of Market Reaction** ➔ Big volume spikes show how strongly investors react to earnings.
+    - **Help Large Investors Manage Liquidity** ➔ Easier to buy/sell large amounts.
+    - **Improve Short-Term Trading Strategies** ➔ Volume surges enable breakouts and momentum trades.
+    - **Better Risk Management** ➔ High volume usually signals higher volatility.
+    - **Power Event-Driven Strategies** ➔ Expected volume helps funds assess opportunities.
+    - **Predictable Output** ➔ Volume tends to spike around earnings, mergers, and major news.
+    """)
+
+    st.subheader("Model Used: Random Forest")
+    st.write("""
+    - The model was trained using historical data with key financial ratios.
+    - Model performance was evaluated using **Mean Absolute Error (MAE)** and **R-squared (R²)**.
+    """)
+
+# Page 2: Volume Prediction
+elif page == "Volume Prediction":
+    st.title("Volume Prediction After Earnings Release")
+
+    ticker = st.selectbox("Select a stock ticker for prediction:", tickers)
+    st.session_state['selected_ticker'] = ticker
+
+    tab1, tab2 = st.tabs(["Company Snapshot", "Volume Prediction Summary"])
+
+    with tab1:
+        st.header("Company Snapshot")
+
         stock = yf.Ticker(ticker)
         info = stock.info
 
@@ -101,48 +123,41 @@ with tabs[1]:
         if not hist.empty:
             st.line_chart(hist[['Volume', 'Close']])
 
-# Page 2: Volume Prediction After Earnings
-with tabs[2]:
-    st.header("Volume Prediction After Earnings")
-    # Filter the test set for the selected ticker and get the most recent record
-    ticker_data = testing_data[testing_data['Ticker'] == ticker].sort_values('date', ascending=False).head(1)
+    with tab2:
+        st.header("Volume Prediction Summary")
 
-    if not ticker_data.empty:
-        # Prepare input features (exclude label and non-features)
-        input_df = ticker_data[selected_features]
-        
-        # Make the prediction
-        prediction = pipeline.predict(input_df)[0]
+        ticker_data = testing_data[testing_data['Ticker'] == ticker].sort_values('date', ascending=False).head(1)
 
-        # Extract the actual volume
-        actual_volume = ticker_data['predicted_volume'].values[0]
-        
-        # Compute difference and percent difference
-        volume_diff = actual_volume - prediction
-        percent_diff = (volume_diff / actual_volume) * 100 if actual_volume != 0 else 0
+        if not ticker_data.empty:
+            input_df = ticker_data[selected_features]
+            input_df = input_df.fillna(0)
 
-        # Display results
-        st.subheader(f"{ticker} - Volume Prediction Summary")
-        st.write(f"**Prediction Date:** {ticker_data['date'].values[0]}")
-        st.write(f"**Actual Volume:** {int(actual_volume):,}")
-        st.write(f"**Predicted Volume:** {int(prediction):,}")
-        st.write(f"**Difference:** {int(volume_diff):,} shares")
-        st.write(f"**Percent Difference:** {percent_diff:.2f}%")
+            prediction = pipeline.predict(input_df)[0]
+            actual_volume = ticker_data['predicted_volume'].values[0]
 
-        # Category messages
-        st.divider()
-        if prediction >= 50_000_000:
-            st.info("High expected trading activity following earnings announcement.")
-        elif prediction >= 10_000_000:
-            st.info("Moderate trading volume expected post-earnings.")
+            volume_diff = actual_volume - prediction
+            percent_diff = (volume_diff / actual_volume) * 100 if actual_volume != 0 else 0
+
+            st.subheader(f"{ticker} - Volume Prediction Summary")
+            st.write(f"**Prediction Date:** {ticker_data['date'].values[0]}")
+            st.write(f"**Actual Volume:** {int(actual_volume):,}")
+            st.write(f"**Predicted Volume:** {int(prediction):,}")
+            st.write(f"**Difference:** {int(volume_diff):,} shares")
+            st.write(f"**Percent Difference:** {percent_diff:.2f}%")
+
+            st.divider()
+            if prediction >= 50_000_000:
+                st.info("High expected trading activity following earnings announcement.")
+            elif prediction >= 10_000_000:
+                st.info("Moderate trading volume expected post-earnings.")
+            else:
+                st.info("Low trading volume expected following earnings release.")
         else:
-            st.info("Low trading volume expected following earnings release.")
-    else:
-        st.warning("No recent data available for this ticker.")
+            st.warning("No recent data available for this ticker.")
 
-# Page 3: Model Insight
-with tabs[3]:
-    st.header("Model Insight")
+# Page 3: Feature Importance
+elif page == "Feature Importance":
+    st.title("Model Feature Importance")
 
     model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
     importances = model.feature_importances_

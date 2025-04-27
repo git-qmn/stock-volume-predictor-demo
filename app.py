@@ -163,7 +163,20 @@ elif page == "Volume Prediction":
 
         stock = yf.Ticker(ticker)
         info = stock.info
-
+        # --- Company Overview Section ---
+        st.subheader(f"{info.get('longName', ticker)} Overview")
+        
+        company_summary = info.get('longBusinessSummary', None)
+        if company_summary:
+            st.write(company_summary)
+        else:
+            st.write("No company overview available.")
+        
+        company_website = info.get('website', None)
+        if company_website:
+            st.markdown(f"[Visit Website]({company_website})")
+        
+        st.divider()
         # --- Company Basic Info (Valuation Measures + Financial Highlights) ---
         st.subheader("Company Overview")
         col1, col2 = st.columns(2)

@@ -165,65 +165,72 @@ elif page == "Volume Prediction":
     
         st.subheader(info.get('longName', ticker))
     
-        # Market Overview
+        # --- Company Info ---
+        st.markdown("### Company Info")
         col1, col2 = st.columns(2)
+    
         with col1:
-            st.markdown(f"**Previous Close:** {info.get('previousClose', 'N/A')}")
-            st.markdown(f"**Open:** {info.get('open', 'N/A')}")
-            st.markdown(f"**Bid:** {info.get('bid', 'N/A')}")
-            st.markdown(f"**Ask:** {info.get('ask', 'N/A')}")
-            st.markdown(f"**Day's Range:** {info.get('dayLow', 'N/A')} - {info.get('dayHigh', 'N/A')}")
-            st.markdown(f"**52 Week Range:** {info.get('fiftyTwoWeekLow', 'N/A')} - {info.get('fiftyTwoWeekHigh', 'N/A')}")
-        with col2:
-            st.markdown(f"**Volume:** {info.get('volume', 'N/A'):,}")
-            st.markdown(f"**Avg Volume:** {info.get('averageVolume', 'N/A'):,}")
-            st.markdown(f"**Beta:** {info.get('beta', 'N/A')}")
+            st.markdown(f"**Sector:** {info.get('sector', 'N/A')}")
+            st.markdown(f"**Industry:** {info.get('industry', 'N/A')}")
+            st.markdown(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}")
             st.markdown(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
-            st.markdown(f"**EPS (TTM):** {info.get('trailingEps', 'N/A')}")
-            st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
+            st.markdown(f"**Forward P/E:** {info.get('forwardPE', 'N/A')}")
+            st.markdown(f"**PEG Ratio:** {info.get('pegRatio', 'N/A')}")
+        
+        with col2:
+            st.markdown(f"**Price/Sales:** {info.get('priceToSalesTrailing12Months', 'N/A')}")
+            st.markdown(f"**Price/Book:** {info.get('priceToBook', 'N/A')}")
+            st.markdown(f"**Return on Assets:** {info.get('returnOnAssets', 'N/A')}")
+            st.markdown(f"**Return on Equity:** {info.get('returnOnEquity', 'N/A')}")
+            st.markdown(f"**Profit Margin:** {info.get('profitMargins', 'N/A')}")
+            st.markdown(f"**Operating Margin:** {info.get('operatingMargins', 'N/A')}")
     
         st.divider()
     
-        # Sector, Industry
-        st.subheader("Company Info")
-        market_cap = info.get('marketCap', None)
-        market_cap_display = f"{market_cap:,}" if isinstance(market_cap, (int, float)) else "N/A"
+        # --- Charts: Close Price and Volume ---
+        st.markdown("### Recent Stock Activity")
     
-        st.markdown((
-            f"**Sector:** {info.get('sector', 'N/A')}  \n"
-            f"**Industry:** {info.get('industry', 'N/A')}  \n"
-            f"**Market Cap:** {market_cap_display}  \n"
-            f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}  \n"
-            f"**Forward P/E:** {info.get('forwardPE', 'N/A')}  \n"
-            f"**PEG Ratio:** {info.get('pegRatio', 'N/A')}  \n"
-            f"**Price/Sales:** {info.get('priceToSalesTrailing12Months', 'N/A')}  \n"
-            f"**Price/Book:** {info.get('priceToBook', 'N/A')}"
-        ))
-    
-        st.divider()
-    
-        # Allow time range selection
-        st.subheader("Recent Volume and Price")
         period = st.selectbox("Select time range:", ["1mo", "3mo", "6mo", "ytd", "1y", "2y", "5y", "max"], index=0)
         hist = stock.history(period=period)
     
         if not hist.empty:
-            fig, ax1 = plt.subplots(figsize=(10, 5))
+            chart_col1, chart_col2 = st.columns(2)
     
-            ax1.set_xlabel('Date')
-            ax1.set_ylabel('Close Price', color='tab:blue')
-            ax1.plot(hist.index, hist['Close'], color='tab:blue', label="Close Price")
-            ax1.tick_params(axis='y', labelcolor='tab:blue')
+            with chart_col1:
+                st.markdown("**Closing Price**")
+                fig1, ax1 = plt.subplots(figsize=(6, 4))
+                ax1.plot(hist.index, hist['Close'], color='blue')
+                ax1.set_ylabel("Close Price ($)")
+                ax1.set_xlabel("Date")
+                ax1.set_title("Close Price Over Time")
+                st.pyplot(fig1)
     
-            ax2 = ax1.twinx()
-            ax2.set_ylabel('Volume', color='tab:orange')
-            ax2.bar(hist.index, hist['Volume'], color='tab:orange', alpha=0.3, label="Volume")
-            ax2.tick_params(axis='y', labelcolor='tab:orange')
-    
-            fig.tight_layout()
-            st.pyplot(fig)
+            with chart_col2:
+                st.markdown("**Volume Traded**")
+                fig2, ax2 = plt.subplots(figsize=(6, 4))
+                ax2.bar(hist.index, hist['Volume'], color='orange', alpha=0.6)
+                ax2.set_ylabel("Volume")
+                ax2.set_xlabel("Date")
+                ax2.set_title("Volume Over Time")
+                st.pyplot(fig2)
         else:
-            st.warning("No historical data available for this stock.")
+            st.warning("No historical trading data available for this stock.")
+    
+        st.divider()
+    
+        # --- Detailed Stock Info ---
+        st.markdown("### Stock Details")
+        st.markdown(f"**Previous Close:** {info.get('previousClose', 'N/A')}")
+        st.markdown(f"**Open:** {info.get('open', 'N/A')}")
+        st.markdown(f"**Bid:** {info.get('bid', 'N/A')}")
+        st.markdown(f"**Ask:** {info.get('ask', 'N/A')}")
+        st.markdown(f"**Day's Range:** {info.get('dayLow', 'N/A')} - {info.get('dayHigh', 'N/A')}")
+        st.markdown(f"**52 Week Range:** {info.get('fiftyTwoWeekLow', 'N/A')} - {info.get('fiftyTwoWeekHigh', 'N/A')}")
+        st.markdown(f"**Volume:** {info.get('volume', 'N/A'):,}")
+        st.markdown(f"**Avg Volume:** {info.get('averageVolume', 'N/A'):,}")
+        st.markdown(f"**Beta:** {info.get('beta', 'N/A')}")
+        st.markdown(f"**EPS (TTM):** {info.get('trailingEps', 'N/A')}")
+        st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
 
 
     with tab2:

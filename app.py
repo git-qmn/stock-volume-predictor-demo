@@ -307,49 +307,55 @@ elif page == "Volume Prediction":
                 else:
                     st.markdown(f"**Volume Change vs Avg.:** N/A")
             # --- Recent Volume Chart ---
+            # --- Recent Volume Chart with Time Range Selection ---
             st.subheader("Recent Volume Traded")
             
-            fig_vol = go.Figure()
-            fig_vol.add_trace(go.Bar(
-                x=hist.index, 
-                y=hist['Volume'], 
-                marker_color='lightblue',
-                name='Trading Volume'
-            ))
-            
-            fig_vol.update_layout(
-                title="Recent Trading Volume",
-                xaxis_title="Date",
-                yaxis_title="Volume",
-                height=400,
-                margin=dict(l=20, r=20, t=50, b=20),
-                xaxis_rangeslider_visible=False
+            # Add time range dropdown
+            volume_time_range = st.selectbox(
+                "Select time range for volume chart:",
+                options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"],
+                index=2  # Default is "1M"
             )
             
-            st.plotly_chart(fig_vol, use_container_width=True)
+            # Mapping for yfinance periods and intervals
+            volume_time_mapping = {
+                "1D": ("1d", "5m"),
+                "5D": ("5d", "15m"),
+                "1M": ("1mo", "1d"),
+                "6M": ("6mo", "1d"),
+                "YTD": ("ytd", "1d"),
+                "1Y": ("1y", "1d"),
+                "5Y": ("5y", "1wk"),
+                "Max": ("max", "1mo")
+            }
+            volume_period, volume_interval = volume_time_mapping.get(volume_time_range, ("1mo", "1d"))
+            
+            # Re-fetch historical data based on selected time range
+            hist_volume = stock.history(period=volume_period, interval=volume_interval)
+            
+            if not hist_volume.empty:
+                fig_vol = go.Figure()
+                fig_vol.add_trace(go.Bar(
+                    x=hist_volume.index,
+                    y=hist_volume['Volume'],
+                    marker_color='lightblue',
+                    name='Trading Volume'
+                ))
                 
+                fig_vol.update_layout(
+                    title=f"Recent Trading Volume ({volume_time_range})",
+                    xaxis_title="Date",
+                    yaxis_title="Volume",
+                    height=400,
+                    margin=dict(l=20, r=20, t=50, b=20),
+                    xaxis_rangeslider_visible=False
+                )
+                st.plotly_chart(fig_vol, use_container_width=True)
+            else:
+                st.warning("No volume data available for this time range.")
+            
             st.divider()
-    
-            # --- Actual vs Predicted: Clean Horizontal Bar ---
-            st.subheader("Comparison: Actual vs Predicted Volume")
-    
-            fig_comp = go.Figure()
-            fig_comp.add_trace(go.Bar(
-                y=["Actual Volume", "Predicted Volume"],
-                x=[actual_volume, prediction],
-                orientation='h',
-                marker_color=['green', 'blue']
-            ))
-            fig_comp.update_layout(
-                height=300,
-                margin=dict(l=30, r=30, t=30, b=30),
-                xaxis_title="Volume",
-                yaxis_title="",
-                showlegend=False
-            )
-            st.plotly_chart(fig_comp, use_container_width=True)
-    
-            st.divider()
+
     
             # --- Model Confidence ---
             st.subheader("Model Confidence")

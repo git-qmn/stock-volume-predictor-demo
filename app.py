@@ -235,7 +235,7 @@ elif page == "Volume Prediction":
             yaxis_title="Close Price ($)",
             height=400
         )
-    st.plotly_chart(fig_price, use_container_width=True)
+        st.plotly_chart(fig_price, use_container_width=True)
         st.divider()
         
     # --- Stock Details (fixed to match exactly 4-column layout you want) ---

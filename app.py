@@ -58,8 +58,8 @@ with open("completed_tickers.txt", "r") as f:
 # Sidebar for ticker selection
 with st.sidebar:
     ticker = st.selectbox("Select a stock ticker:", tickers)
-    st.caption("Note: Model trained mainly on tech stocks. Predictions for other sectors may have varied accuracy.")  
-    st.caption("Model trained on data up to October 2023. Predictions may not reflect current market conditions.")
+    st.caption("Note: Model trained on tech stocks. Predictions for other sectors are not applicable.")  
+    st.caption("Model trained on data up to June 2024. Predictions will occur on the dates for earnings announcements between July and December of 2024.")
 
 # Page 1: Company Snapshot
 with tabs[0]:

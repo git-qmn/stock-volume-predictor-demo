@@ -307,12 +307,11 @@ elif page == "Volume Prediction":
                 else:
                     st.markdown(f"**Volume Change vs Avg.:** N/A")
             # --- Recent Volume Chart ---
-            # --- Recent Volume Chart with Time Range Selection ---
             st.subheader("Recent Volume Traded")
             
             # Add time range dropdown
             volume_time_range = st.selectbox(
-                "Select time range for volume chart:",
+                "Select time range:",
                 options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"],
                 index=2  # Default is "1M"
             )
@@ -343,7 +342,7 @@ elif page == "Volume Prediction":
                 ))
                 
                 fig_vol.update_layout(
-                    title=f"Recent Trading Volume ({volume_time_range})",
+                    title=f"Recent Trading Volume",
                     xaxis_title="Date",
                     yaxis_title="Volume",
                     height=400,

@@ -394,15 +394,22 @@ elif page == "Volume Prediction":
     
             # --- Volume Compared to Stock's Average Volume ---
             st.subheader("Volume vs. Stock Average Volume")
+            
             avg_volume = info.get('averageVolume', None)
-    
+            
             if avg_volume:
                 volume_change = (prediction - avg_volume) / avg_volume * 100
-                st.write(f"**Predicted Volume Change vs Average:** {volume_change:.2f}%")
-                st.caption("Comparison relative to typical daily trading activity.")
+                st.markdown(f"**Predicted Volume Change vs Average:** {volume_change:.2f}%")
+            
+                st.caption("""
+                **Interpretation:**  
+                A volume change of {:.2f}% compared to the stock’s typical daily trading activity suggests a relatively mild shift in investor interest.  
+                Small changes like this often indicate normal market fluctuations rather than major news or sentiment changes.  
+                Traders may not expect significant liquidity improvements or unusual price volatility based on this prediction.
+                """.format(volume_change))
             else:
                 st.write("Average volume data not available.")
-    
+            
             st.divider()
 
             # --- Business Interpretation ---

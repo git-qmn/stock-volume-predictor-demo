@@ -55,7 +55,6 @@ def get_financial_ratios(ticker):
     except Exception:
         return None
 
-# Page 1: Overview
 if page == "Overview":
     st.title("Volume Prediction After Financial Releases")
 
@@ -66,27 +65,88 @@ if page == "Overview":
     - Jean Alvergnas  
     """)
 
-    st.subheader("🎯 App Purpose")
+    st.divider()
+
+    st.subheader("App Purpose")
     st.write("""
     This Streamlit app predicts the volume of stock traded on the day following a financial release.
     It leverages past trading behavior and key financial ratios to anticipate activity after earnings announcements.
     """)
 
-    st.subheader("💡 Why is This Valuable?")
+    st.divider()
+
+    st.subheader("Why is This Valuable?")
     st.markdown("""
-    - **Signal Strength of Market Reaction** ➔ Big volume spikes show how strongly investors react to earnings.
-    - **Help Large Investors Manage Liquidity** ➔ Easier to buy/sell large amounts.
-    - **Improve Short-Term Trading Strategies** ➔ Volume surges enable breakouts and momentum trades.
-    - **Better Risk Management** ➔ High volume usually signals higher volatility.
-    - **Power Event-Driven Strategies** ➔ Expected volume helps funds assess opportunities.
-    - **Predictable Output** ➔ Volume tends to spike around earnings, mergers, and major news.
+    - **Signal Strength of Market Reaction** ➔ Big volume spikes show how strongly investors react to earnings announcements.
+    - **Help Large Investors Manage Liquidity** ➔ High volume days make it easier for funds to buy/sell large amounts without moving the stock price.
+    - **Improve Short-Term Trading Strategies** ➔ Traders use volume surges for breakouts, reversals, and momentum trading opportunities.
+    - **Better Risk Management** ➔ High expected volume helps manage volatility risks in trading portfolios.
+    - **Power Event-Driven Strategies** ➔ Funds trading around earnings rely on expected volume to assess trade sizing.
+    - **Predictable Output** ➔ Volume tends to spike predictably around earnings, mergers, and major corporate events.
     """)
+
+    st.divider()
 
     st.subheader("Model Used: Random Forest")
     st.write("""
-    - The model was trained using historical data with key financial ratios.
-    - Model performance was evaluated using **Mean Absolute Error (MAE)** and **R-squared (R²)**.
+    - **Random Forest** was selected for its ability to handle non-linear relationships and provide robust predictions.
+    - Ensemble methods like Random Forest help avoid overfitting compared to single models.
+    - Feature importance from the model gives useful insights into drivers of post-earnings volume.
+    - Model performance was evaluated using:
+        - **Mean Absolute Error (MAE)**
+        - **R-squared (R²)** to measure variance explained.
     """)
+
+    st.divider()
+
+    st.subheader("Dataset Description")
+    st.write("""
+    - Data includes company financial fundamentals (e.g., P/E Ratio, Return on Assets) and stock trading volumes.
+    - Each record links a company's financial release date to the next available trading day's actual volume.
+    - Financial data was collected from public earnings reports and market databases.
+    - Volume data was sourced from U.S. stock exchange feeds.
+    - Dataset focuses primarily on major U.S.-listed companies from the technology, semiconductor, cloud computing, and cybersecurity sectors.
+    - The dataset covers earnings announcements up to **June 2024**.
+    """)
+
+    st.divider()
+
+    st.subheader("Model Inputs")
+    st.write("""
+    - The model uses financial ratios that would have been publicly available immediately after the earnings release.
+    - No future data or forward-looking indicators are used — ensuring real-time applicability.
+    - Inputs include ratios like EV/EBITDA, Net Margin, Return on Equity, Debt-to-Equity, and Asset Turnover.
+    """)
+
+    st.divider()
+
+    st.subheader("Feature Engineering Highlights")
+    st.write("""
+    - Selected key financial ratios that showed the strongest historical relationship with post-earnings volume movements.
+    - Standardized and cleaned features to ensure consistency across different companies and industries.
+    - Focused on variables that are timely, widely reported, and reliable.
+    """)
+
+    st.divider()
+
+    st.subheader("Modeling Approach")
+    st.write("""
+    - Trained a Random Forest Regressor on historical financial and volume data to predict next-day trading volume after earnings releases.
+    - Hyperparameters were tuned using cross-validation to avoid overfitting.
+    - Model generalizes best to U.S. technology, semiconductor, cloud, and cybersecurity sectors based on training data composition.
+    """)
+
+    st.divider()
+
+    st.subheader("Limitations and Future Work")
+    st.write("""
+    - Current model generalizes mainly to the U.S. technology and growth stock sectors; expansion to other sectors like financial services, healthcare, and industrials would enhance model generalizability.
+    - Incorporating forward-looking indicators (e.g., analyst EPS revisions, options activity) could improve predictive power.
+    - Future iterations could predict not only volume spikes but also price movements around earnings events.
+    - Expansion to international markets (e.g., Europe, Asia) could test robustness across different trading environments.
+    """)
+
+    st.divider()
 
 # Page 2: Volume Prediction
 elif page == "Volume Prediction":

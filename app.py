@@ -175,7 +175,6 @@ elif page == "Volume Prediction":
             st.markdown(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}")
             st.markdown(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
             st.markdown(f"**Forward P/E:** {info.get('forwardPE', 'N/A')}")
-            st.markdown(f"**PEG Ratio:** {info.get('pegRatio', 'N/A')}")
 
         with col2:
             st.markdown(f"**Price/Sales:** {info.get('priceToSalesTrailing12Months', 'N/A')}")

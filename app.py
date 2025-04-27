@@ -7,6 +7,9 @@ import joblib
 import yfinance as yf
 import matplotlib.pyplot as plt
 
+# Upload the test data
+testing_data = pd.read_csv("final_testing_set.csv")
+
 # Load full pipeline (model + scaler)
 @st.cache_resource
 def load_pipeline():
@@ -89,64 +92,41 @@ with tabs[0]:
 # Page 2: Volume Prediction After Earnings
 with tabs[1]:
     st.header("Volume Prediction After Earnings")
+    # Filter the test set for the selected ticker and get the most recent record
+    ticker_data = testing_data[testing_data['Ticker'] == ticker].sort_values('date', ascending=False).head(1)
 
-    if ticker:
-        fin_df = get_financial_ratios(ticker)
-        if fin_df is not None:
-            try:
-                if 'Current Volume' not in fin_df.columns:
-                    fin_df['Current Volume'] = 0
+    if not ticker_data.empty:
+        # Prepare input features (exclude label and non-features)
+        input_df = ticker_data[selected_features]
+        
+        # Make the prediction
+        prediction = pipeline.predict(input_df)[0]
 
-                input_df = fin_df[selected_features]
+        # Extract the actual volume
+        actual_volume = ticker_data['predicted_volume'].values[0]
+        
+        # Compute difference and percent difference
+        volume_diff = actual_volume - prediction
+        percent_diff = (volume_diff / actual_volume) * 100 if actual_volume != 0 else 0
 
-                # Fill any missing features with 0
-                input_df = input_df.fillna(0)
+        # Display results
+        st.subheader(f"{ticker} - Volume Prediction Summary")
+        st.write(f"**Prediction Date:** {ticker_data['date'].values[0]}")
+        st.write(f"**Actual Volume:** {int(actual_volume):,}")
+        st.write(f"**Predicted Volume:** {int(prediction):,}")
+        st.write(f"**Difference:** {int(volume_diff):,} shares")
+        st.write(f"**Percent Difference:** {percent_diff:.2f}%")
 
-                prediction = pipeline.predict(input_df)[0]
-
-                stock = yf.Ticker(ticker)
-                info = stock.info
-
-                st.subheader(f"{info.get('longName', ticker)} ({ticker})")
-
-                market_cap = info.get('marketCap', None)
-                if isinstance(market_cap, (int, float)):
-                    market_cap_display = f"{market_cap:,}"
-                else:
-                    market_cap_display = "N/A"
-
-                st.write(f"**Sector:** {info.get('sector', 'N/A')}")
-                st.write(f"**Industry:** {info.get('industry', 'N/A')}")
-                st.write(f"**Market Cap:** {market_cap_display}")
-                st.write(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
-
-                st.divider()
-
-                st.success(
-                    f"Predicted trading volume on the first market day after earnings release: "
-                    f"{int(prediction):,} shares"
-                )
-
-                if prediction >= 50_000_000:
-                    st.info("High expected trading activity following earnings announcement.")
-                elif prediction >= 10_000_000:
-                    st.info("Moderate trading volume expected post-earnings.")
-                else:
-                    st.info("Low trading volume expected following earnings release.")
-
-                st.divider()
-
-                st.subheader("Recent Volume Trends")
-                hist = stock.history(period="1mo")
-                if not hist.empty:
-                    st.line_chart(hist['Volume'])
-                else:
-                    st.write("No historical volume data available.")
-
-            except Exception as e:
-                st.error(f"Prediction failed: {e}")
+        # Category messages
+        st.divider()
+        if prediction >= 50_000_000:
+            st.info("High expected trading activity following earnings announcement.")
+        elif prediction >= 10_000_000:
+            st.info("Moderate trading volume expected post-earnings.")
         else:
-            st.warning("Could not fetch financial fundamentals for this ticker.")
+            st.info("Low trading volume expected following earnings release.")
+    else:
+        st.warning("No recent data available for this ticker.")
 
 # Page 3: Model Insight
 with tabs[2]:

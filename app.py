@@ -306,6 +306,8 @@ elif page == "Volume Prediction":
                     st.markdown(f"**Volume Change vs Avg.:** {avg_vol_change:.2f}%")
                 else:
                     st.markdown(f"**Volume Change vs Avg.:** N/A")
+
+            st.divider()
             # --- Recent Volume Chart ---
             st.subheader("Recent Volume Traded")
             

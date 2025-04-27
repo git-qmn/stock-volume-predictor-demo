@@ -225,6 +225,36 @@ elif page == "Volume Prediction":
             st.plotly_chart(fig_vol, use_container_width=True)
 
         st.divider()
+        
+    # --- Stock Details (Previous Close, Open, Bid, Ask, etc.) ---
+    st.subheader("Stock Details")
+
+    detail_col1, detail_col2, detail_col3, detail_col4 = st.columns(4)
+
+    with detail_col1:
+        st.markdown(f"**Previous Close:** {info.get('previousClose', 'N/A')}")
+        st.markdown(f"**Open:** {info.get('open', 'N/A')}")
+        st.markdown(f"**Bid:** {info.get('bid', 'N/A')}")
+        st.markdown(f"**Ask:** {info.get('ask', 'N/A')}")
+
+    with detail_col2:
+        st.markdown(f"**Day's Range:** {info.get('dayLow', 'N/A')} - {info.get('dayHigh', 'N/A')}")
+        st.markdown(f"**52 Week Range:** {info.get('fiftyTwoWeekLow', 'N/A')} - {info.get('fiftyTwoWeekHigh', 'N/A')}")
+        st.markdown(f"**Volume:** {info.get('volume', 'N/A'):,}" if info.get('volume') else "**Volume:** N/A")
+        st.markdown(f"**Avg Volume:** {info.get('averageVolume', 'N/A'):,}" if info.get('averageVolume') else "**Avg Volume:** N/A")
+
+    with detail_col3:
+        st.markdown(f"**Beta:** {info.get('beta', 'N/A')}")
+        st.markdown(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
+        st.markdown(f"**EPS (TTM):** {info.get('trailingEps', 'N/A')}")
+        st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
+
+    with detail_col4:
+        st.markdown(f"**Earnings Date:** {info.get('earningsDate', ['N/A'])[0] if isinstance(info.get('earningsDate'), list) else info.get('earningsDate', 'N/A')}")
+        st.markdown(f"**Ex-Dividend Date:** {info.get('exDividendDate', 'N/A')}")
+        st.markdown(f"**Forward Dividend & Yield:** {info.get('dividendRate', 'N/A')} ({info.get('dividendYield', 'N/A')})")
+
+    st.divider()
 
     # --- Volume Prediction Summary ---
     with tab2:

@@ -153,120 +153,80 @@ if page == "Overview":
 elif page == "Volume Prediction":
     st.title("Volume Prediction After Earnings Release")
 
-    ticker = st.selectbox("Select a stock ticker for prediction:", tickers)
+    ticker = st.selectbox("Select a stock ticker:", tickers)
 
     tab1, tab2 = st.tabs(["Company Snapshot", "Volume Prediction Summary"])
 
     # --- Company Snapshot ---
     with tab1:
-        st.header("Company Snapshot")
+        st.header(f"{ticker} - Company Snapshot")
 
         stock = yf.Ticker(ticker)
         info = stock.info
 
-        # --- Basic Company Info ---
-        st.subheader(f"{info.get('longName', ticker)}")
-        
+        # --- Company Basic Info (Valuation Measures + Financial Highlights) ---
+        st.subheader("Company Overview")
         col1, col2 = st.columns(2)
 
         with col1:
-            st.markdown(f"**Sector:** {info.get('sector', 'N/A')}")
-            st.markdown(f"**Industry:** {info.get('industry', 'N/A')}")
-            st.markdown(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}")
+            st.markdown("### Valuation Measures")
+            st.markdown(f"**Market Cap:** {info.get('marketCap', 'N/A'):,}" if info.get('marketCap') else "**Market Cap:** N/A")
+            st.markdown(f"**Enterprise Value:** {info.get('enterpriseValue', 'N/A'):,}" if info.get('enterpriseValue') else "**Enterprise Value:** N/A")
             st.markdown(f"**Trailing P/E:** {info.get('trailingPE', 'N/A')}")
             st.markdown(f"**Forward P/E:** {info.get('forwardPE', 'N/A')}")
-
-        with col2:
+            st.markdown(f"**PEG Ratio:** {info.get('pegRatio', 'N/A')}")
             st.markdown(f"**Price/Sales:** {info.get('priceToSalesTrailing12Months', 'N/A')}")
             st.markdown(f"**Price/Book:** {info.get('priceToBook', 'N/A')}")
-            st.markdown(f"**Beta:** {info.get('beta', 'N/A')}")
-            st.markdown(f"**EPS (TTM):** {info.get('trailingEps', 'N/A')}")
-            st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
+            st.markdown(f"**Enterprise Value/Revenue:** {info.get('enterpriseToRevenue', 'N/A')}")
+            st.markdown(f"**Enterprise Value/EBITDA:** {info.get('enterpriseToEbitda', 'N/A')}")
+
+        with col2:
+            st.markdown("### Financial Highlights")
+            st.markdown(f"**Profit Margin:** {info.get('profitMargins', 'N/A')}")
+            st.markdown(f"**Return on Assets (ttm):** {info.get('returnOnAssets', 'N/A')}")
+            st.markdown(f"**Return on Equity (ttm):** {info.get('returnOnEquity', 'N/A')}")
+            st.markdown(f"**Revenue (ttm):** {info.get('totalRevenue', 'N/A'):,}" if info.get('totalRevenue') else "**Revenue (ttm):** N/A")
+            st.markdown(f"**Net Income (ttm):** {info.get('netIncomeToCommon', 'N/A'):,}" if info.get('netIncomeToCommon') else "**Net Income (ttm):** N/A")
+            st.markdown(f"**Diluted EPS (ttm):** {info.get('trailingEps', 'N/A')}")
+            st.markdown(f"**Total Cash (mrq):** {info.get('totalCash', 'N/A'):,}" if info.get('totalCash') else "**Total Cash (mrq):** N/A")
+            st.markdown(f"**Total Debt/Equity (mrq):** {info.get('debtToEquity', 'N/A')}")
+            st.markdown(f"**Levered Free Cash Flow:** {info.get('leveredFreeCashflow', 'N/A'):,}" if info.get('leveredFreeCashflow') else "**Levered Free Cash Flow:** N/A")
 
         st.divider()
 
-        # --- Time Range Selection ---
-        st.subheader("Recent Stock Price")
-        time_range = st.selectbox(
-            "Select time range:", 
-            options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"],
-            index=2
-        )
+        # --- Historical Charts ---
+        st.subheader("Stock Price and Volume")
 
-        # --- Map user selection to yfinance interval ---
+        time_range = st.selectbox("Select time range:", options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], index=2)
+
         time_mapping = {
             "1D": ("1d", "5m"),
             "5D": ("5d", "15m"),
-            "1M": ("1mo", "60m"),
+            "1M": ("1mo", "1d"),
             "6M": ("6mo", "1d"),
             "YTD": ("ytd", "1d"),
             "1Y": ("1y", "1d"),
             "5Y": ("5y", "1wk"),
             "Max": ("max", "1mo")
         }
-
         period, interval = time_mapping.get(time_range, ("1mo", "1d"))
 
         hist = stock.history(period=period, interval=interval)
 
         if not hist.empty:
-            # --- Close Price Chart ---
             fig_price = go.Figure()
-            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='royalblue')))
-            fig_price.update_layout(
-                title="Recent Stock Price",
-                xaxis_title="Date",
-                yaxis_title="Close Price ($)",
-                height=400,
-                margin=dict(l=20, r=20, t=50, b=20)
-            )
+            fig_price.add_trace(go.Scatter(x=hist.index, y=hist['Close'], mode='lines', name='Close Price', line=dict(color='blue')))
+            fig_price.update_layout(title="Recent Stock Price", xaxis_title="Date", yaxis_title="Close Price ($)", height=400)
             st.plotly_chart(fig_price, use_container_width=True)
 
-            # --- Volume Chart ---
-            st.subheader("Recent Volume Traded")
-            fig_volume = go.Figure()
-            fig_volume.add_trace(go.Bar(x=hist.index, y=hist['Volume'], name='Volume', marker_color='lightblue'))
-            fig_volume.update_layout(
-                title="Volume Over Time",
-                xaxis_title="Date",
-                yaxis_title="Volume",
-                height=300,
-                margin=dict(l=20, r=20, t=50, b=20)
-            )
-            st.plotly_chart(fig_volume, use_container_width=True)
+            fig_vol = go.Figure()
+            fig_vol.add_trace(go.Bar(x=hist.index, y=hist['Volume'], name='Volume', marker_color='lightblue'))
+            fig_vol.update_layout(title="Recent Volume", xaxis_title="Date", yaxis_title="Volume", height=300)
+            st.plotly_chart(fig_vol, use_container_width=True)
 
         st.divider()
-    
-# Stock Details
-    st.subheader("Stock Details")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown(f"**Previous Close:** {info.get('previousClose', 'N/A')}")
-        st.markdown(f"**Open:** {info.get('open', 'N/A')}")
-        st.markdown(f"**Bid:** {info.get('bid', 'N/A')}")
-        st.markdown(f"**Ask:** {info.get('ask', 'N/A')}")
-    
-    with col2:
-        st.markdown(f"**Day's Range:** {info.get('dayLow', 'N/A')} - {info.get('dayHigh', 'N/A')}")
-        st.markdown(f"**52 Week Range:** {info.get('fiftyTwoWeekLow', 'N/A')} - {info.get('fiftyTwoWeekHigh', 'N/A')}")
-        st.markdown(f"**Volume:** {info.get('volume', 'N/A'):,}")
-        st.markdown(f"**Avg. Volume:** {info.get('averageVolume', 'N/A'):,}")
-    
-    with col3:
-        st.markdown(f"**Market Cap (intraday):** {info.get('marketCap', 'N/A'):,}")
-        st.markdown(f"**Beta (5Y Monthly):** {info.get('beta', 'N/A')}")
-        st.markdown(f"**P/E Ratio (TTM):** {info.get('trailingPE', 'N/A')}")
-        st.markdown(f"**EPS (TTM):** {info.get('trailingEps', 'N/A')}")
-    
-    with col4:
-        st.markdown(f"**Earnings Date:** {info.get('earningsTimestamp', 'N/A')}")
-        st.markdown(f"**Forward Dividend & Yield:** {info.get('dividendRate', 'N/A')} ({info.get('dividendYield', 'N/A')})")
-        st.markdown(f"**Ex-Dividend Date:** {info.get('exDividendDate', 'N/A')}")
-        st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
 
-    # Volume Prediction Summary
+    # --- Volume Prediction Summary ---
     with tab2:
         st.header("Volume Prediction Summary")
 

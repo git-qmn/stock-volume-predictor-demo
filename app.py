@@ -46,6 +46,7 @@ def get_financial_ratios(ticker):
 
 # Create tab structure
 tabs = st.tabs([
+    "Project Overiew",
     "Company Snapshot",
     "Volume Prediction After Earnings",
     "Model Insight"
@@ -61,8 +62,19 @@ with st.sidebar:
     st.caption("Note: Model trained on tech stocks. Predictions for other sectors are not applicable.")  
     st.caption("Model trained on data up to June 2024. Predictions will occur on the dates for earnings announcements between July and December of 2024.")
 
-# Page 1: Company Snapshot
+# Page 0: Project Overview
 with tabs[0]:
+    st.header("Project Overview")
+    st.write("""
+        This project predicts the trading volume of stocks after earnings announcements using a Random Forest model.
+        The model was trained on historical data and includes various financial ratios as features.
+    """)
+    st.write("""
+        The model's performance was evaluated using metrics such as Mean Absolute Error (MAE) and R-squared (R²).
+    """)
+
+# Page 1: Company Snapshot
+with tabs[1]:
     st.header("Company Snapshot")
 
     if ticker:
@@ -90,7 +102,7 @@ with tabs[0]:
             st.line_chart(hist[['Volume', 'Close']])
 
 # Page 2: Volume Prediction After Earnings
-with tabs[1]:
+with tabs[2]:
     st.header("Volume Prediction After Earnings")
     # Filter the test set for the selected ticker and get the most recent record
     ticker_data = testing_data[testing_data['Ticker'] == ticker].sort_values('date', ascending=False).head(1)
@@ -129,7 +141,7 @@ with tabs[1]:
         st.warning("No recent data available for this ticker.")
 
 # Page 3: Model Insight
-with tabs[2]:
+with tabs[3]:
     st.header("Model Insight")
 
     model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']

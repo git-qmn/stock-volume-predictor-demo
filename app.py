@@ -481,23 +481,25 @@ elif page == "Top Stocks by Volume":
     start_date = end_date - pd.Timedelta(days=90)
 
     fig = go.Figure()
-    volume_data = {}  # Keep raw data for the table
+    volume_data = {}
     
     for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
-            df = df.reset_index()  # Ensure 'Date' is a column
+            df = df.reset_index()
+            df['Date'] = pd.to_datetime(df['Date'])  # Force Date to datetime (redundant but safe)
             volume_in_millions = df['Volume'] / 1_000_000
     
-            # Add to plot
+            # Plot using datetime x-axis
             fig.add_trace(go.Scatter(x=df['Date'], y=volume_in_millions, mode='lines', name=ticker))
-    
-            # Save original volume data for table (keep 'Date' and 'Volume')
             volume_data[ticker] = df[['Date', 'Volume']]
     
     fig.update_layout(
         title="Volume Traded (in Millions) Over the Past 3 Months",
-        xaxis_title="Date",
+        xaxis=dict(
+            title="Date",
+            type="date"  # Explicitly tell Plotly this is datetime
+        ),
         yaxis_title="Volume (Millions)",
         hovermode="x unified",
         legend_title="Ticker",

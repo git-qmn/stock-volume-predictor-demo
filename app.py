@@ -508,9 +508,13 @@ elif page == "Top Stocks by Volume":
     # Ensure all dates are present for each ticker
     # Fill missing dates with NaN volumes
     pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
-    
+
     # Sort by date
     pivot_df = pivot_df.sort_index(ascending=False)
+    
+    # Flatten the multi-level columns
+    pivot_df.columns.name = None
+    pivot_df = pivot_df.rename_axis(None, axis=1)
     
     # Show last 5 dates
     st.dataframe(pivot_df.head(5))

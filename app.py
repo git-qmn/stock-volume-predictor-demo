@@ -168,6 +168,8 @@ elif page == "Data Description":
         "predicted_volume": "Predicted Volume Traded"
     }
 
+    st.subheader("Overview")
+    
     st.markdown("""
     **Three Final Datasets**: final_training_data.csv, final_testing_data.csv, completed_tickers.txt
 
@@ -183,7 +185,7 @@ elif page == "Data Description":
     st.divider()
 
     st.subheader("Data Dictionary")
-    st.write("""This table is scrollable, so please make sure to scroll and see every variable""")
+    st.write("""Please scroll to see every variable.""")
     data_dict_df = pd.DataFrame(list(data_dict.items()), columns=["Column", "Description"])
     st.dataframe(data_dict_df)
     

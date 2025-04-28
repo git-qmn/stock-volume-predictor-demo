@@ -147,7 +147,7 @@ elif page == "Data Description":
     st.title("Data Description")
 
     st.write("""
-    **Three Final Dataset**: final_training_data.csv, final_testing_data.csv, completed_tickers.txt
+    Three Final Dataset: final_training_data.csv, final_testing_data.csv, completed_tickers.txt
 
     All of the initial datasets were pulled from the Wharton Research Data Services (WRDS). In order to get the financial ratios that we were interested in we used Compustat. In addition to these
     ratios, we also needed the stock prices which we had to pull from CRSP. The list of technology companies that we trained and tested were consistent across both aspects and 

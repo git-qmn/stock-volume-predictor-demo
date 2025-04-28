@@ -28,7 +28,7 @@ with open("completed_tickers.txt", "r") as f:
 st.markdown("""
     <style>
     .sidebar .sidebar-content h3 {
-        font-size: 24px !important;
+        font-size: 48px !important;
     }
     </style>
 """, unsafe_allow_html=True)

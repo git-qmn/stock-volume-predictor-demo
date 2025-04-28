@@ -152,7 +152,7 @@ elif page == "Data Description":
         "public_date": "Date the earnings reports were made public",
         "evm": "Enterprise Value Multiple",
         "pe_exi": "Price to Earnings ratio",
-        "ps": "Price to sSales",
+        "ps": "Price to Sales",
         "npm": "Net Profit Margin",
         "opmbd": "Operating Margin before Depreciation",
         "roa": "Return on Assets",
@@ -178,18 +178,6 @@ elif page == "Data Description":
     All of the data is from **January 1st, 2010** to **December 31st, 2024**. The training data stops on **June 30th, 2024** and the remaining period is designated to the final testing set. Since WRDS does
     not have any information for the current year, we had to use the end of 2024 to locate the most recent and available earning announcements to allow our model to generate a prediction. Outside
     of the time period, the training and testing set contain the same exact columns which you can find below.
-    """)
-    
-    st.divider()
-
-    st.subheader("Financial Features and Explanantion")
-    st.write("""
-    - Data includes company financial fundamentals (e.g., P/E Ratio, Return on Assets) and stock trading volumes.
-    - Each record links a company's financial release date to the next available trading day's actual volume.
-    - Financial data was collected from public earnings reports and market databases.
-    - Volume data was sourced from U.S. stock exchange feeds.
-    - Dataset focuses primarily on major U.S.-listed companies from the technology, semiconductor, cloud computing, and cybersecurity sectors.
-    - The dataset covers earnings announcements up to **June 2024**.
     """)
 
     st.divider()

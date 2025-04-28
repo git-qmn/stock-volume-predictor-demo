@@ -106,6 +106,32 @@ if page == "App Overview":
 
     st.divider()
 
+    st.subheader("Model Inputs")
+    st.write("""
+    - The model uses financial ratios that would have been publicly available immediately after the earnings release.
+    - No future data or forward-looking indicators are used — ensuring real-time applicability.
+    - Inputs include ratios like EV/EBITDA, Net Margin, Return on Equity, Debt-to-Equity, and Asset Turnover.
+    """)
+
+    st.divider()
+
+    st.subheader("Feature Engineering Highlights")
+    st.write("""
+    - Selected key financial ratios that showed the strongest historical relationship with post-earnings volume movements.
+    - Standardized and cleaned features to ensure consistency across different companies and industries.
+    - Focused on variables that are timely, widely reported, and reliable.
+    """)
+
+    st.divider()
+
+    st.subheader("Modeling Approach")
+    st.write("""
+    - Trained a Random Forest Regressor on historical financial and volume data to predict next-day trading volume after earnings releases.
+    - Hyperparameters were tuned using cross-validation to avoid overfitting.
+    - Model generalizes best to U.S. technology, semiconductor, cloud, and cybersecurity sectors based on training data composition.
+    """)
+    st.divider()
+
     st.subheader("Limitations and Future Work")
     st.write("""
     - Current model generalizes mainly to the U.S. technology and growth stock sectors; expansion to other sectors like financial services, healthcare, and industrials would enhance model generalizability.
@@ -132,31 +158,6 @@ elif page == "Data Description":
     """)
 
     st.divider()
-
-    st.subheader("Model Inputs")
-    st.write("""
-    - The model uses financial ratios that would have been publicly available immediately after the earnings release.
-    - No future data or forward-looking indicators are used — ensuring real-time applicability.
-    - Inputs include ratios like EV/EBITDA, Net Margin, Return on Equity, Debt-to-Equity, and Asset Turnover.
-    """)
-
-    st.divider()
-
-    st.subheader("Feature Engineering Highlights")
-    st.write("""
-    - Selected key financial ratios that showed the strongest historical relationship with post-earnings volume movements.
-    - Standardized and cleaned features to ensure consistency across different companies and industries.
-    - Focused on variables that are timely, widely reported, and reliable.
-    """)
-
-    st.divider()
-
-    st.subheader("Modeling Approach")
-    st.write("""
-    - Trained a Random Forest Regressor on historical financial and volume data to predict next-day trading volume after earnings releases.
-    - Hyperparameters were tuned using cross-validation to avoid overfitting.
-    - Model generalizes best to U.S. technology, semiconductor, cloud, and cybersecurity sectors based on training data composition.
-    """)
 
 # Page 3: Volume Prediction
 elif page == "Volume Prediction":

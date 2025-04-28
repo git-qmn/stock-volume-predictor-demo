@@ -390,7 +390,7 @@ elif page == "Volume Prediction":
             with col2:
                 st.metric("Adjusted R-squared (Model Predictive Power)", f"{adjusted_r2 * 100:.2f}%")
             
-            with col2:
+            with col3:
                 st.metric("Mean Absolute Error (MAE)", f"{mae_score:,.0f} shares")
             
             st.caption("""

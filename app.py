@@ -480,38 +480,21 @@ elif page == "Top Stocks by Volume":
     end_date = pd.to_datetime("today")
     start_date = end_date - pd.Timedelta(days=90)
 
-    fig = go.Figure()
+    fig, ax = plt.subplots(figsize=(12, 6))
     volume_data = {}
-    
-    for ticker in tickers:
-    df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
-    if not df.empty:
-        df = df.reset_index()
-        df['Date'] = pd.to_datetime(df['Date']).dt.tz_localize(None)  # Strip timezone info
-        volume_in_millions = df['Volume'] / 1_000_000
 
-        fig.add_trace(go.Scatter(
-            x=df['Date'],  # Pure datetime
-            y=volume_in_millions,
-            mode='lines',
-            name=ticker
-        ))
-        volume_data[ticker] = df[['Date', 'Volume']]
-    
-    fig.update_layout(
-        title="Volume Traded (in Millions) Over the Past 3 Months",
-        xaxis=dict(
-            title="Date",
-            type="date"  # Explicitly tell Plotly this is datetime
-        ),
-        yaxis_title="Volume (Millions)",
-        hovermode="x unified",
-        legend_title="Ticker",
-        width=900,
-        height=500
-    )
-    
-    st.plotly_chart(fig)
+    for ticker in tickers:
+        df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
+        if not df.empty:
+            volume_in_millions = df['Volume'] / 1_000_000
+            ax.plot(df.index, volume_in_millions, label=ticker)
+            volume_data[ticker] = df[['Volume']]
+
+    ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Volume (Millions)")
+    ax.legend()
+    st.pyplot(fig)
 
     st.subheader("Last Few Entries for Each Stock's Volume Data")
     # Combine all tickers into one DataFrame

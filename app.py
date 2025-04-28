@@ -119,7 +119,7 @@ if page == "App Overview":
 # Page 2: Data Description
 elif page == "Data Description":
     st.title("Data Description")
-        st.divider()
+    st.divider()
 
     st.subheader("Dataset Description")
     st.write("""

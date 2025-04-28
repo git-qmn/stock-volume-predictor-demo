@@ -25,8 +25,7 @@ with open("completed_tickers.txt", "r") as f:
     tickers = [line.strip() for line in f if line.strip()]
 
 # Sidebar navigation
-st.markdown("<h3>Navigate</h3>", unsafe_allow_html=True)
-page = st.sidebar.radio("", [
+page = st.sidebar.radio("Navigate", [
     "Overview",
     "Volume Prediction",
     "Feature Importance",

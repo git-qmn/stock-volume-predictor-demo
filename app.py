@@ -117,7 +117,7 @@ if page == "App Overview":
     st.divider()
 
 # Page 2: Data Description
-elif page = "Data Description":
+elif page == "Data Description":
     st.title("Data Description")
         st.divider()
 

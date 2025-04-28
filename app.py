@@ -148,24 +148,24 @@ elif page == "Data Description":
 
     data_dict = {
         "tic": "Ticker symbol",
-        "calendar_qtr_x": "Calendar quarter",
-        "public_date": "Date of public release",
-        "evm": "Enterprise value multiple",
-        "pe_exi": "Price to earnings excluding items",
-        "ps": "Price to sales",
-        "npm": "Net profit margin",
-        "opmbd": "Operating margin before depreciation",
-        "roa": "Return on assets",
-        "roe": "Return on equity",
-        "de_ratio": "Debt to equity ratio",
-        "intcov_ratio": "Interest coverage ratio",
-        "quick_ratio": "Quick ratio",
-        "curr_ratio": "Current ratio",
-        "at_turn": "Asset turnover",
-        "ptb": "Price to book",
+        "calendar_qtr_x": "Calendar cuarter that the financials were released",
+        "public_date": "Date the earnings reports were made public",
+        "evm": "Enterprise Value Multiple",
+        "pe_exi": "Price to Earnings ratio",
+        "ps": "Price to sSales",
+        "npm": "Net Profit Margin",
+        "opmbd": "Operating Margin before Depreciation",
+        "roa": "Return on Assets",
+        "roe": "Return on Equity",
+        "de_ratio": "Debt to Equity Ratio",
+        "intcov_ratio": "Interest Coverage Ratio",
+        "quick_ratio": "Quick Ratio",
+        "curr_ratio": "Current Ratio",
+        "at_turn": "Asset Turnover",
+        "ptb": "Price to Book",
         "date": "Date",
-        "VOL": "Volume traded",
-        "predicted_volume": "Predicted volume traded"
+        "VOL": "Volume Traded",
+        "predicted_volume": "Predicted Volume Traded"
     }
 
     st.markdown("""

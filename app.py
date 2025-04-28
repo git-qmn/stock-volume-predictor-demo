@@ -486,6 +486,7 @@ elif page == "Top Stocks by Volume":
     for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
+            df = df.reset_index()  # <--- Add this
             volume_in_millions = df['Volume'] / 1_000_000
             fig.add_trace(go.Scatter(x=df.index, y=volume_in_millions, mode='lines', name=ticker))
             volume_data[ticker] = df[['Volume']]

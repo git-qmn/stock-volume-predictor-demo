@@ -34,7 +34,7 @@ st.markdown("""
 
 with st.sidebar:
     st.markdown("### App Navigation")
-    page = st.radio("", ["App Overview", "Volume Prediction", "Feature Importance", "Top Stocks by Volume"])
+    page = st.radio("", ["App Overview", "Data Description", "Volume Prediction", "Feature Importance", "Top Stocks by Volume"])
 
 # Get financial ratios from yfinance
 def get_financial_ratios(ticker):
@@ -106,6 +106,21 @@ if page == "App Overview":
 
     st.divider()
 
+    st.subheader("Limitations and Future Work")
+    st.write("""
+    - Current model generalizes mainly to the U.S. technology and growth stock sectors; expansion to other sectors like financial services, healthcare, and industrials would enhance model generalizability.
+    - Incorporating forward-looking indicators (e.g., analyst EPS revisions, options activity) could improve predictive power.
+    - Future iterations could predict not only volume spikes but also price movements around earnings events.
+    - Expansion to international markets (e.g., Europe, Asia) could test robustness across different trading environments.
+    """)
+
+    st.divider()
+
+# Page 2: Data Description
+elif page = "Data Description":
+    st.title("Data Description")
+        st.divider()
+
     st.subheader("Dataset Description")
     st.write("""
     - Data includes company financial fundamentals (e.g., P/E Ratio, Return on Assets) and stock trading volumes.
@@ -143,19 +158,7 @@ if page == "App Overview":
     - Model generalizes best to U.S. technology, semiconductor, cloud, and cybersecurity sectors based on training data composition.
     """)
 
-    st.divider()
-
-    st.subheader("Limitations and Future Work")
-    st.write("""
-    - Current model generalizes mainly to the U.S. technology and growth stock sectors; expansion to other sectors like financial services, healthcare, and industrials would enhance model generalizability.
-    - Incorporating forward-looking indicators (e.g., analyst EPS revisions, options activity) could improve predictive power.
-    - Future iterations could predict not only volume spikes but also price movements around earnings events.
-    - Expansion to international markets (e.g., Europe, Asia) could test robustness across different trading environments.
-    """)
-
-    st.divider()
-
-# Page 2: Volume Prediction
+# Page 3: Volume Prediction
 elif page == "Volume Prediction":
     st.title("Volume Prediction After Earnings Release")
 
@@ -455,7 +458,7 @@ elif page == "Volume Prediction":
             st.warning("No recent prediction data available for this ticker.")
 
 
-# Page 3: Feature Importance
+# Page 4: Feature Importance
 elif page == "Feature Importance":
     st.title("Model Feature Importance")
 
@@ -471,7 +474,7 @@ elif page == "Feature Importance":
     ax.set_title("Feature Importances")
     st.pyplot(fig)
 
-# Page 4: Top Stocks
+# Page 5: Top Stocks
 elif page == "Top Stocks by Volume":
     st.title("Top 5 Traded Stocks in the Past 3 Months")
     st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")

@@ -27,13 +27,13 @@ with open("completed_tickers.txt", "r") as f:
 st.markdown("""
     <style>
     [data-testid="stSidebar"] h3 {
-        font-size: 48px !important;
+        font-size: 42px !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
 with st.sidebar:
-    st.markdown("### Navigate")
+    st.markdown("### App Navigation")
     page = st.radio("", ["App Overview", "Volume Prediction", "Feature Importance", "Top Stocks by Volume"])
 
 # Get financial ratios from yfinance

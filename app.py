@@ -379,7 +379,7 @@ elif page == "Volume Prediction":
             
             # Real evaluation results
             r2_score = 0.8206095  # R-squared
-            adjusted_r2 = Adjusted R-squared: 0.815333
+            adjusted_r2 = 0.815333  # Adjusted R-Squared
             mae_score = 3228716.84  # Mean Absolute Error
             
             col1, col2, col3 = st.columns(3)

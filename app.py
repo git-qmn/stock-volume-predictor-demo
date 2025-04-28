@@ -496,7 +496,20 @@ elif page == "Top Stocks by Volume":
     ax.legend()
     st.pyplot(fig)
 
-    st.subheader("📋 Last Few Entries for Each Stock's Volume Data")
-    for ticker, data in volume_data.items():
-        st.write(f"**{ticker}**")
-        st.dataframe(data.tail(5))
+    st.subheader("Last Few Entries for Each Stock's Volume Data")
+    # Combine all tickers into one DataFrame
+    combined_df = pd.concat(
+        [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
+    )
+    
+    # Reset index to prepare for pivoting
+    combined_df = combined_df.reset_index()
+    
+    # Pivot the table: Dates as rows, Tickers as columns, Volumes as values
+    pivot_df = combined_df.pivot(index='Date', columns='Ticker', values='Volume')
+    
+    # Sort by date (optional)
+    pivot_df = pivot_df.sort_index(ascending=False)
+    
+    # Show the last 5 dates
+    st.dataframe(pivot_df.head(5))

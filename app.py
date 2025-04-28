@@ -24,13 +24,19 @@ pipeline, selected_features = load_pipeline()
 with open("completed_tickers.txt", "r") as f:
     tickers = [line.strip() for line in f if line.strip()]
 
-# Sidebar navigation
-page = st.sidebar.radio("Navigate", [
-    "Overview",
-    "Volume Prediction",
-    "Feature Importance",
-    "Top Stocks by Volume"
-])
+# Inject CSS
+st.markdown("""
+    <style>
+    .sidebar .sidebar-content h3 {
+        font-size: 24px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Sidebar content
+with st.sidebar:
+    st.markdown("### Navigate")  # This will be affected by the CSS above
+    page = st.radio("", ["App Overview", "Volume Prediction", "Feature Importance", "Top Stocks by Volume"])
 
 # Get financial ratios from yfinance
 def get_financial_ratios(ticker):

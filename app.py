@@ -168,14 +168,14 @@ elif page == "Data Description":
         "predicted_volume": "Predicted volume traded"
     }
 
-    st.write("""
-    **Three Final Dataset**: final_training_data.csv, final_testing_data.csv, completed_tickers.txt
+    st.markdown("""
+    **Three Final Datasets**: final_training_data.csv, final_testing_data.csv, completed_tickers.txt
 
     All of the initial datasets were pulled from the Wharton Research Data Services (WRDS). In order to get the financial ratios that we were interested in we used Compustat. In addition to these
     ratios, we also needed the stock prices which we had to pull from CRSP. The list of technology companies that we trained and tested were consistent across both aspects and 
     can be found in the completed_tickers.txt file. 
     
-    All of the data is from January 1st, 2010 to December 31st, 2024. The training data stops on June 30th, 2024 and the remaining period is designated to the final testing set. Since WRDS does
+    All of the data is from **January 1st, 2010** to **December 31st, 2024**. The training data stops on **June 30th, 2024** and the remaining period is designated to the final testing set. Since WRDS does
     not have any information for the current year, we had to use the end of 2024 to locate the most recent and available earning announcements to allow our model to generate a prediction. Outside
     of the time period, the training and testing set contain the same exact columns which you can find below.
     """)
@@ -194,6 +194,7 @@ elif page == "Data Description":
 
     st.divider()
 
+    st.subheader("Data Dictionary")
     data_dict_df = pd.DataFrame(list(data_dict.items()), columns=["Column", "Description"])
     st.dataframe(data_dict_df)
     

@@ -481,15 +481,19 @@ elif page == "Top Stocks by Volume":
     start_date = end_date - pd.Timedelta(days=90)
 
     fig = go.Figure()
-    volume_data = {}
+    volume_data = {}  # Keep raw data for the table
     
     for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
-            df = df.reset_index()  # <--- Add this
+            df = df.reset_index()  # Ensure 'Date' is a column
             volume_in_millions = df['Volume'] / 1_000_000
-            fig.add_trace(go.Scatter(x=df.index, y=volume_in_millions, mode='lines', name=ticker))
-            volume_data[ticker] = df[['Volume']]
+    
+            # Add to plot
+            fig.add_trace(go.Scatter(x=df['Date'], y=volume_in_millions, mode='lines', name=ticker))
+    
+            # Save original volume data for table (keep 'Date' and 'Volume')
+            volume_data[ticker] = df[['Date', 'Volume']]
     
     fig.update_layout(
         title="Volume Traded (in Millions) Over the Past 3 Months",

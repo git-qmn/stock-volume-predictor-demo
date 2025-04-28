@@ -24,9 +24,17 @@ pipeline, selected_features = load_pipeline()
 with open("completed_tickers.txt", "r") as f:
     tickers = [line.strip() for line in f if line.strip()]
 
-# Sidebar content
+st.markdown("""
+    <style>
+    [data-testid="stSidebar"] h3 {
+        font-size: 48px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 with st.sidebar:
-    page = st.radio("Navigate", ["App Overview", "Volume Prediction", "Feature Importance", "Top Stocks by Volume"])
+    st.markdown("### Navigate")
+    page = st.radio("", ["App Overview", "Volume Prediction", "Feature Importance", "Top Stocks by Volume"])
 
 # Get financial ratios from yfinance
 def get_financial_ratios(ticker):

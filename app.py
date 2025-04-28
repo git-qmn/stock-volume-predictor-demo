@@ -514,7 +514,6 @@ elif page == "Top Stocks by Volume":
     
     # Flatten the multi-level columns
     pivot_df.columns.name = None
-    pivot_df = pivot_df.rename_axis(None, axis=1)
     
     # Show last 5 dates
     st.dataframe(pivot_df.head(5))

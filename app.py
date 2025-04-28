@@ -484,15 +484,19 @@ elif page == "Top Stocks by Volume":
     volume_data = {}
     
     for ticker in tickers:
-        df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
-        if not df.empty:
-            df = df.reset_index()
-            df['Date'] = pd.to_datetime(df['Date'])  # Force Date to datetime (redundant but safe)
-            volume_in_millions = df['Volume'] / 1_000_000
-    
-            # Plot using datetime x-axis
-            fig.add_trace(go.Scatter(x=df['Date'], y=volume_in_millions, mode='lines', name=ticker))
-            volume_data[ticker] = df[['Date', 'Volume']]
+    df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
+    if not df.empty:
+        df = df.reset_index()
+        df['Date'] = pd.to_datetime(df['Date']).dt.tz_localize(None)  # Strip timezone info
+        volume_in_millions = df['Volume'] / 1_000_000
+
+        fig.add_trace(go.Scatter(
+            x=df['Date'],  # Pure datetime
+            y=volume_in_millions,
+            mode='lines',
+            name=ticker
+        ))
+        volume_data[ticker] = df[['Date', 'Volume']]
     
     fig.update_layout(
         title="Volume Traded (in Millions) Over the Past 3 Months",

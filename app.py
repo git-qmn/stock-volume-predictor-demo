@@ -379,12 +379,16 @@ elif page == "Volume Prediction":
             
             # Real evaluation results
             r2_score = 0.8206095  # R-squared
+            adjusted_r2 = Adjusted R-squared: 0.815333
             mae_score = 3228716.84  # Mean Absolute Error
             
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
             
             with col1:
                 st.metric("R-squared (Model Predictive Power)", f"{r2_score * 100:.2f}%")
+
+            with col2:
+                st.metric("Adjusted R-squared (Model Predictive Power)", f"{adjusted_r2 * 100:.2f}%")
             
             with col2:
                 st.metric("Mean Absolute Error (MAE)", f"{mae_score:,.0f} shares")

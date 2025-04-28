@@ -517,4 +517,4 @@ elif page == "Top Stocks by Volume":
     pivot_df.index.name = None    # Remove 'Date' label
     
     # Show last 5 dates
-    st.dataframe(pivot_df.head(5)
+    st.dataframe(pivot_df.head(5))

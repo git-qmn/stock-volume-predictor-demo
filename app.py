@@ -396,7 +396,7 @@ elif page == "Volume Prediction":
             st.caption("""
             **Interpretation:**  
             The model explains approximately 82% of the variation in post-earnings trading volumes, meaning it captures most of the key factors influencing volume changes.
-            Additionally, the Adjusted R^2 shows that the variation covered by the features in the model does not directly correlate to having a lot of features present.
+            Additionally, the Adjusted $R^{2}$ shows that the variation covered by the features in the model does not directly correlate to having a lot of features present.
             On average, the model's predictions differ from the actual trading volume by about 3.2 million shares.  
             While not perfect, the model provides a strong, reliable signal for anticipating major shifts in trading activity.
             """)

@@ -146,6 +146,28 @@ if page == "App Overview":
 elif page == "Data Description":
     st.title("Data Description")
 
+    data_dict = {
+        "tic": "Ticker symbol",
+        "calendar_qtr_x": "Calendar quarter",
+        "public_date": "Date of public release",
+        "evm": "Enterprise value multiple",
+        "pe_exi": "Price to earnings excluding items",
+        "ps": "Price to sales",
+        "npm": "Net profit margin",
+        "opmbd": "Operating margin before depreciation",
+        "roa": "Return on assets",
+        "roe": "Return on equity",
+        "de_ratio": "Debt to equity ratio",
+        "intcov_ratio": "Interest coverage ratio",
+        "quick_ratio": "Quick ratio",
+        "curr_ratio": "Current ratio",
+        "at_turn": "Asset turnover",
+        "ptb": "Price to book",
+        "date": "Date",
+        "VOL": "Volume traded",
+        "predicted_volume": "Predicted volume traded"
+    }
+
     st.write("""
     **Three Final Dataset**: final_training_data.csv, final_testing_data.csv, completed_tickers.txt
 
@@ -170,6 +192,11 @@ elif page == "Data Description":
     - The dataset covers earnings announcements up to **June 2024**.
     """)
 
+    st.divider()
+
+    data_dict_df = pd.DataFrame(list(data_dict.items()), columns=["Column", "Description"])
+    st.dataframe(data_dict_df)
+    
     st.divider()
 
 # Page 3: Volume Prediction

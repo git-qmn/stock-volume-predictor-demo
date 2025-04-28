@@ -512,9 +512,8 @@ elif page == "Top Stocks by Volume":
     # Sort by date
     pivot_df = pivot_df.sort_index(ascending=False)
     
-    # Flatten multi-level columns and index
-    pivot_df.columns.name = None  # Remove 'Ticker' label
-    pivot_df.index.name = None    # Remove 'Date' label
+    # Flatten the multi-level columns
+    pivot_df.columns = pivot_df.columns.get_level_values(0)  # This flattens MultiIndex columns
     
     # Show last 5 dates
     st.dataframe(pivot_df.head(5))

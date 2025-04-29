@@ -33,16 +33,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 with st.sidebar:
+    st.markdown("## App Navigation")
+
     page = st.radio("Select a page:", [
         "App Overview",
         "Dataset Overview",
         "Volume Prediction",
         "Feature Importance",
-        "Top Stocks by Volume",
+        "Top Stocks by Volume"
     ])
 
-    st.markdown("---")
-    st.caption("Use the sidebar to explore different sections.")
 
 
 # Get financial ratios from yfinance

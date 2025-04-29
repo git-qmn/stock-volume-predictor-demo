@@ -38,7 +38,7 @@ page = st.sidebar.selectbox(
     label="",
     options=[
         "App Overview",
-        "Dataset Overview",
+        "Data Description",
         "Volume Prediction",
         "Feature Importance",
         "Top Stocks by Volume"

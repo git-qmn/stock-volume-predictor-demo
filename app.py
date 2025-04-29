@@ -201,47 +201,6 @@ elif page == "Data Description and Feature Importance":
     
     st.divider()
 
-    st.write("""
-    The Random Forest model predicts next-day trading volume after earnings announcements, leveraging key financial ratios.
-    """)
-
-    st.divider()
-
-    st.subheader("Model Overview")
-    st.markdown("""
-    Our objective was to predict the **next-day trading volume** for stocks following an earnings announcement, using only information available immediately after the earnings release.
-    
-    - **Input Features:**  
-      A curated set of **financial ratios** (e.g., EV/EBITDA, Net Margin, Return on Assets) that are publicly disclosed at the time of the earnings report.
-    
-    - **Target Variable:**  
-      **Volume traded** on the trading day immediately after the earnings release.
-    
-    - **Model Selected:**  
-      **Random Forest Regressor**
-      - Captures **non-linear** interactions between financial ratios and trading behavior.
-      - Provides **robust predictions** while minimizing the risk of overfitting on historical patterns.
-      - Enables **interpretability** by ranking the importance of each financial feature.
-    
-    - **Training Strategy:**  
-      - Historical earnings and financial data were used to train the model across a wide range of technology-sector stocks.
-      - The dataset was split chronologically to simulate real-world prediction scenarios, ensuring that the model only learned from past data.
-    
-    - **Performance Metrics:**
-      - **R-squared:** 82%
-      - **Adjusted R-squared:** 81.5%
-      - **Mean Absolute Error (MAE):** ~3.2 million shares
-    
-    - **Why Random Forest?**
-      - Financial ratios often interact in complex, **non-linear** ways.
-      - Ensemble methods like Random Forest can **capture hidden interactions** that traditional models would miss.
-      - Feature importance rankings provide insights into which financial factors most strongly influence trading activity.
-    
-    """)
-
-
-    st.divider()
-
     st.subheader("Feature Importance")
 
     # --- Calculate feature importance
@@ -277,26 +236,6 @@ elif page == "Data Description and Feature Importance":
     - Financial health indicators (e.g., Debt-to-Equity, Interest Coverage) play a secondary role.
     """)
 
-    st.divider()
-
-    st.subheader("Model Limitations")
-    st.markdown("""
-    - **Sector Concentration:**  
-      Model was trained mainly on technology-sector stocks, limiting generalizability to other sectors (e.g., financials, energy).
-    
-    - **Limited Feature Set:**  
-      Only financial ratios were used; broader market events, news, or sentiment analysis were not included.
-    
-    - **Volume Volatility:**  
-      External shocks (e.g., major world news, lawsuits, mergers) can cause unpredictable volume spikes not captured by financial metrics.
-    
-    - **Data Quality Dependence:**  
-      Predictions are based on the accuracy and timeliness of financial disclosures. Delayed or erroneous filings can impact model reliability.
-    
-    - **No Price Prediction:**  
-      The model is designed to predict **volume activity only**, not stock price movement or volatility.
-    """)
-    
     st.divider()
     
     st.subheader("Key Takeaways")

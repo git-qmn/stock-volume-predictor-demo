@@ -599,38 +599,63 @@ elif page == "Top Stocks by Volume":
     st.plotly_chart(fig, use_container_width=True)
 
 # --- Last Few Entries ---
-st.subheader("Recent Volume Data")
-if volume_data:
-    combined_df = pd.concat(
-        [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
-    )
-    combined_df = combined_df.reset_index()
-    pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
-    pivot_df = pivot_df.sort_index(ascending=False)
-    st.dataframe(pivot_df.head(5))
-else:
-    st.warning("No volume data available.")
+# st.subheader("Recent Volume Data")
+# if volume_data:
+#     combined_df = pd.concat(
+#         [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
+#     )
+#     combined_df = combined_df.reset_index()
+#     pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
+#     pivot_df = pivot_df.sort_index(ascending=False)
+#     st.dataframe(pivot_df.head(5))
+# else:
+#     st.warning("No volume data available.")
 
     
 
-    st.subheader("Last Few Entries for Each Stock's Volume Data")
-    # Combine all tickers into one DataFrame
-    combined_df = pd.concat(
-        [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
-    )
+#     st.subheader("Last Few Entries for Each Stock's Volume Data")
+#     # Combine all tickers into one DataFrame
+#     combined_df = pd.concat(
+#         [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
+#     )
     
-    # Reset index to prepare for pivoting
-    combined_df = combined_df.reset_index()
+#     # Reset index to prepare for pivoting
+#     combined_df = combined_df.reset_index()
     
-    # Ensure all dates are present for each ticker
-    # Fill missing dates with NaN volumes
-    pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
+#     # Ensure all dates are present for each ticker
+#     # Fill missing dates with NaN volumes
+#     pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
 
-    # Sort by date
-    pivot_df = pivot_df.sort_index(ascending=False)
+#     # Sort by date
+#     pivot_df = pivot_df.sort_index(ascending=False)
     
-    # Flatten the multi-level columns
-    pivot_df.columns = pivot_df.columns.get_level_values(0)  # This flattens MultiIndex columns
+#     # Flatten the multi-level columns
+#     pivot_df.columns = pivot_df.columns.get_level_values(0)  # This flattens MultiIndex columns
     
-    # Show last 5 dates
-    st.dataframe(pivot_df.head(5))
+#     # Show last 5 dates
+#     st.dataframe(pivot_df.head(5))
+
+    # --- Last Few Entries ---
+    st.subheader("Recent Volume Data")
+    
+    if volume_data:
+        # Properly combine ticker data
+        combined_df = pd.concat(
+            [
+                df.assign(Ticker=ticker).reset_index()[['Date', 'Ticker', 'Volume']] 
+                for ticker, df in volume_data.items()
+            ],
+            ignore_index=True
+        )
+        
+        # Pivot: rows = Date, columns = Ticker
+        pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume')
+        
+        # Sort by most recent
+        pivot_df = pivot_df.sort_index(ascending=False)
+        
+        # Display last 5 rows
+        st.dataframe(pivot_df.head(5))
+    else:
+        st.warning("No volume data available.")
+

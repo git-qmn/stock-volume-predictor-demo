@@ -540,23 +540,7 @@ elif page == "Feature Importance":
       - Ensemble methods like Random Forest can **capture hidden interactions** that traditional models would miss.
       - Feature importance rankings provide insights into which financial factors most strongly influence trading activity.
     
-    ---
-    ### Model Limitations
-    - **Sector Bias:**  
-      Primarily trained on technology-sector stocks; performance may vary in other industries.
-    
-    - **Feature Simplicity:**  
-      Only financial ratios were considered; no market sentiment or external events included.
-    
-    - **Volume Volatility:**  
-      Sudden news-driven spikes outside earnings cannot be reliably predicted.
-    
-    - **Data Quality:**  
-      Dependent on timely and accurate reporting of company financials.
-    
-    - **No Price Prediction:**  
-      The model predicts **volume only**, not stock price changes.
-    """)
+    )
 
 
     st.divider()
@@ -597,6 +581,24 @@ elif page == "Feature Importance":
     """)
 
     st.divider()
+
+    st.subheader("Model Limitations")
+    st.markdown("""
+    - **Sector Concentration:**  
+      Model was trained mainly on technology-sector stocks, limiting generalizability to other sectors (e.g., financials, energy).
+    
+    - **Limited Feature Set:**  
+      Only financial ratios were used; broader market events, news, or sentiment analysis were not included.
+    
+    - **Volume Volatility:**  
+      External shocks (e.g., major world news, lawsuits, mergers) can cause unpredictable volume spikes not captured by financial metrics.
+    
+    - **Data Quality Dependence:**  
+      Predictions are based on the accuracy and timeliness of financial disclosures. Delayed or erroneous filings can impact model reliability.
+    
+    - **No Price Prediction:**  
+      The model is designed to predict **volume activity only**, not stock price movement or volatility.
+    """)
 
     st.subheader("Key Takeaways")
     st.write("""

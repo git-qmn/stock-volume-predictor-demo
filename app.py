@@ -540,7 +540,7 @@ elif page == "Feature Importance":
       - Ensemble methods like Random Forest can **capture hidden interactions** that traditional models would miss.
       - Feature importance rankings provide insights into which financial factors most strongly influence trading activity.
     
-    )
+    """)
 
 
     st.divider()

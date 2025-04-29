@@ -512,17 +512,52 @@ elif page == "Feature Importance":
 
     st.subheader("Model Overview")
     st.markdown("""
-    - **Input:** Financial ratios available immediately after earnings.
-    - **Target:** Volume traded the day following earnings.
-    - **Model:** Random Forest Regressor
-      - Captures non-linear relationships
-      - Robust to overfitting
-      - Provides interpretable feature importance
+    Our objective was to predict the **next-day trading volume** for stocks following an earnings announcement, using only information available immediately after the earnings release.
+    
+    - **Input Features:**  
+      A curated set of **financial ratios** (e.g., EV/EBITDA, Net Margin, Return on Assets) that are publicly disclosed at the time of the earnings report.
+    
+    - **Target Variable:**  
+      **Volume traded** on the trading day immediately after the earnings release.
+    
+    - **Model Selected:**  
+      **Random Forest Regressor**
+      - Captures **non-linear** interactions between financial ratios and trading behavior.
+      - Provides **robust predictions** while minimizing the risk of overfitting on historical patterns.
+      - Enables **interpretability** by ranking the importance of each financial feature.
+    
+    - **Training Strategy:**  
+      - Historical earnings and financial data were used to train the model across a wide range of technology-sector stocks.
+      - The dataset was split chronologically to simulate real-world prediction scenarios, ensuring that the model only learned from past data.
+    
     - **Performance Metrics:**
-      - R-squared: **82%**
-      - Adjusted R-squared: **81.5%**
-      - Mean Absolute Error (MAE): **~3.2 million shares**
+      - **R-squared:** 82%
+      - **Adjusted R-squared:** 81.5%
+      - **Mean Absolute Error (MAE):** ~3.2 million shares
+    
+    - **Why Random Forest?**
+      - Financial ratios often interact in complex, **non-linear** ways.
+      - Ensemble methods like Random Forest can **capture hidden interactions** that traditional models would miss.
+      - Feature importance rankings provide insights into which financial factors most strongly influence trading activity.
+    
+    ---
+    ### Model Limitations
+    - **Sector Bias:**  
+      Primarily trained on technology-sector stocks; performance may vary in other industries.
+    
+    - **Feature Simplicity:**  
+      Only financial ratios were considered; no market sentiment or external events included.
+    
+    - **Volume Volatility:**  
+      Sudden news-driven spikes outside earnings cannot be reliably predicted.
+    
+    - **Data Quality:**  
+      Dependent on timely and accurate reporting of company financials.
+    
+    - **No Price Prediction:**  
+      The model predicts **volume only**, not stock price changes.
     """)
+
 
     st.divider()
 

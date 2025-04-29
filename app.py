@@ -520,28 +520,67 @@ elif page == "Feature Importance":
 
 # Page 5: Top Stocks
 elif page == "Top Stocks by Volume":
+    # st.title("Top 5 Traded Stocks in the Past 3 Months")
+    # st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
+
+    # tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
+    # end_date = pd.to_datetime("today")
+    # start_date = end_date - pd.Timedelta(days=90)
+
+    # fig, ax = plt.subplots(figsize=(12, 6))
+    # volume_data = {}
+
+    # for ticker in tickers:
+    #     df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
+    #     if not df.empty:
+    #         volume_in_millions = df['Volume'] / 1_000_000
+    #         ax.plot(df.index, volume_in_millions, label=ticker)
+    #         volume_data[ticker] = df[['Volume']]
+
+    # ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
+    # ax.set_xlabel("Date")
+    # ax.set_ylabel("Volume (Millions)")
+    # ax.legend()
+    # st.pyplot(fig)
+
     st.title("Top 5 Traded Stocks in the Past 3 Months")
     st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
-
+    
+    # Define tickers and date range
     tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
     end_date = pd.to_datetime("today")
     start_date = end_date - pd.Timedelta(days=90)
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    volume_data = {}
-
+    
+    # Create figure
+    fig = go.Figure()
+    
+    # Download and plot volume data
     for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
-            volume_in_millions = df['Volume'] / 1_000_000
-            ax.plot(df.index, volume_in_millions, label=ticker)
-            volume_data[ticker] = df[['Volume']]
+            df['Volume_Millions'] = df['Volume'] / 1_000_000
+            fig.add_trace(go.Scatter(
+                x=df.index,
+                y=df['Volume_Millions'],
+                mode='lines',
+                name=ticker
+            ))
+    
+    # Update layout
+    fig.update_layout(
+        title="Daily Trading Volume (in Millions) - Past 3 Months",
+        xaxis_title="Date",
+        yaxis_title="Volume (Millions)",
+        template="plotly_white",
+        height=500,
+        margin=dict(l=20, r=20, t=50, b=20),
+        legend_title="Stock Ticker",
+        xaxis_rangeslider_visible=False
+    )
+    
+    # Show figure
+    st.plotly_chart(fig, use_container_width=True)
 
-    ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Volume (Millions)")
-    ax.legend()
-    st.pyplot(fig)
 
 # --- Last Few Entries ---
 st.subheader("Recent Volume Data")
@@ -555,8 +594,6 @@ if volume_data:
     st.dataframe(pivot_df.head(5))
 else:
     st.warning("No volume data available.")
-
-    
 
     st.subheader("Last Few Entries for Each Stock's Volume Data")
     # Combine all tickers into one DataFrame

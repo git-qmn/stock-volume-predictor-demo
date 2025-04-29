@@ -34,17 +34,18 @@ st.markdown("""
 
 st.sidebar.title("App Navigation")
 
-page = st.sidebar.selectbox(
-    label="",
-    options=[
-        "App Overview",
-        "Dataset Overview",
-        "Volume Prediction",
-        "Feature Importance",
-        "Top Stocks by Volume"
-    ],
-    label_visibility="collapsed"
-)
+if st.sidebar.button("App Overview"):
+    page = "App Overview"
+elif st.sidebar.button("Dataset Overview"):
+    page = "Dataset Overview"
+elif st.sidebar.button("Volume Prediction"):
+    page = "Volume Prediction"
+elif st.sidebar.button("Feature Importance"):
+    page = "Feature Importance"
+elif st.sidebar.button("Top Stocks by Volume"):
+    page = "Top Stocks by Volume"
+else:
+    page = "App Overview" 
 
 
 # Get financial ratios from yfinance

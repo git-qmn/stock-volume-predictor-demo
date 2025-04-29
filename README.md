@@ -26,8 +26,8 @@ Preprocessing steps:
 ## Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_GITHUB/stock-earnings-volume-prediction.git
-cd stock-earnings-volume-prediction
+git clone https://github.com/git-qmn/stock-volume-predictor-demo.git
+cd stock-volume-predictor-demo
 ```
 
 2. Install dependencies:

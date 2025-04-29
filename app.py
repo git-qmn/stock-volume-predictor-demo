@@ -639,24 +639,25 @@ elif page == "Top Stocks by Volume":
 st.subheader("Recent Volume Data")
 
 if volume_data:
-    # Properly combine ticker data
-    combined_df = pd.concat(
-        [
-            df.assign(Ticker=ticker).reset_index()[['Date', 'Ticker', 'Volume']] 
-            for ticker, df in volume_data.items()
-        ],
-        ignore_index=True
-    )
+    all_data = []
+    for ticker, df in volume_data.items():
+        df = df.reset_index()  # Reset index to turn the datetime into a column
+        df['Ticker'] = ticker  # Add Ticker
+        all_data.append(df[['Date', 'Ticker', 'Volume']] if 'Date' in df.columns else df[['Datetime', 'Ticker', 'Volume']])
     
-    # Pivot: rows = Date, columns = Ticker
+    combined_df = pd.concat(all_data, ignore_index=True)
+
+    # Rename 'Datetime' to 'Date' if needed
+    if 'Datetime' in combined_df.columns:
+        combined_df = combined_df.rename(columns={'Datetime': 'Date'})
+
     pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume')
-    
-    # Sort by most recent
+
     pivot_df = pivot_df.sort_index(ascending=False)
-    
-    # Display last 5 rows
+
     st.dataframe(pivot_df.head(5))
 else:
     st.warning("No volume data available.")
+
 
 

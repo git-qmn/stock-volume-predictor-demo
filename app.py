@@ -38,9 +38,8 @@ page = st.sidebar.selectbox(
     label="",
     options=[
         "App Overview",
-        "Data Description",
+        "Data Description and Feature Importance",
         "Volume Prediction",
-        "Feature Importance",
         "Top Stocks by Volume"
     ],
     label_visibility="collapsed"
@@ -153,8 +152,8 @@ if page == "App Overview":
 
     st.divider()
 
-# Page 2: Data Description
-elif page == "Data Description":
+# Page 2: Data Description and Feature Importance
+elif page == "Data Description and Feature Importance":
     st.title("Data Description")
 
     data_dict = {
@@ -201,6 +200,111 @@ elif page == "Data Description":
     st.dataframe(data_dict_df)
     
     st.divider()
+
+    st.write("""
+    The Random Forest model predicts next-day trading volume after earnings announcements, leveraging key financial ratios.
+    """)
+
+    st.divider()
+
+    st.subheader("Model Overview")
+    st.markdown("""
+    Our objective was to predict the **next-day trading volume** for stocks following an earnings announcement, using only information available immediately after the earnings release.
+    
+    - **Input Features:**  
+      A curated set of **financial ratios** (e.g., EV/EBITDA, Net Margin, Return on Assets) that are publicly disclosed at the time of the earnings report.
+    
+    - **Target Variable:**  
+      **Volume traded** on the trading day immediately after the earnings release.
+    
+    - **Model Selected:**  
+      **Random Forest Regressor**
+      - Captures **non-linear** interactions between financial ratios and trading behavior.
+      - Provides **robust predictions** while minimizing the risk of overfitting on historical patterns.
+      - Enables **interpretability** by ranking the importance of each financial feature.
+    
+    - **Training Strategy:**  
+      - Historical earnings and financial data were used to train the model across a wide range of technology-sector stocks.
+      - The dataset was split chronologically to simulate real-world prediction scenarios, ensuring that the model only learned from past data.
+    
+    - **Performance Metrics:**
+      - **R-squared:** 82%
+      - **Adjusted R-squared:** 81.5%
+      - **Mean Absolute Error (MAE):** ~3.2 million shares
+    
+    - **Why Random Forest?**
+      - Financial ratios often interact in complex, **non-linear** ways.
+      - Ensemble methods like Random Forest can **capture hidden interactions** that traditional models would miss.
+      - Feature importance rankings provide insights into which financial factors most strongly influence trading activity.
+    
+    """)
+
+
+    st.divider()
+
+    st.subheader("Feature Importance")
+
+    # --- Calculate feature importance
+    model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
+    importances = model.feature_importances_
+    sorted_idx = np.argsort(importances)[::-1]
+    sorted_features = np.array(selected_features)[sorted_idx]
+    sorted_importance = importances[sorted_idx]
+
+    # --- Plotly Bar Chart (sorted descending)
+    fig = go.Figure(go.Bar(
+        x=sorted_importance[::-1],
+        y=sorted_features[::-1],
+        orientation='h',
+        marker=dict(color='royalblue')
+    ))
+
+    fig.update_layout(
+        title="Top Feature Importances",
+        xaxis_title="Importance",
+        yaxis_title="Feature",
+        height=600,
+        template="plotly_white",
+        margin=dict(l=40, r=20, t=50, b=40)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.caption("""
+    **Interpretation:**  
+    - "Current Volume" is the strongest driver of post-earnings trading activity.
+    - Operational metrics like Return on Assets, EV/EBITDA, and EBITDA Margin also contribute meaningfully.
+    - Financial health indicators (e.g., Debt-to-Equity, Interest Coverage) play a secondary role.
+    """)
+
+    st.divider()
+
+    st.subheader("Model Limitations")
+    st.markdown("""
+    - **Sector Concentration:**  
+      Model was trained mainly on technology-sector stocks, limiting generalizability to other sectors (e.g., financials, energy).
+    
+    - **Limited Feature Set:**  
+      Only financial ratios were used; broader market events, news, or sentiment analysis were not included.
+    
+    - **Volume Volatility:**  
+      External shocks (e.g., major world news, lawsuits, mergers) can cause unpredictable volume spikes not captured by financial metrics.
+    
+    - **Data Quality Dependence:**  
+      Predictions are based on the accuracy and timeliness of financial disclosures. Delayed or erroneous filings can impact model reliability.
+    
+    - **No Price Prediction:**  
+      The model is designed to predict **volume activity only**, not stock price movement or volatility.
+    """)
+    
+    st.divider()
+    
+    st.subheader("Key Takeaways")
+    st.write("""
+    - Stocks with recent strong trading activity tend to exhibit larger post-earnings volume spikes.
+    - Companies with higher profitability and operational efficiency metrics show more predictable volume patterns.
+    - Financial fundamentals enhance prediction beyond technical trading patterns alone.
+    """)
 
 # Page 3: Volume Prediction
 elif page == "Volume Prediction":
@@ -500,115 +604,7 @@ elif page == "Volume Prediction":
     
         else:
             st.warning("No recent prediction data available for this ticker.")
-
-elif page == "Feature Importance":
-    st.title("Model and Feature Insights")
-
-    st.write("""
-    The Random Forest model predicts next-day trading volume after earnings announcements, leveraging key financial ratios.
-    """)
-
-    st.divider()
-
-    st.subheader("Model Overview")
-    st.markdown("""
-    Our objective was to predict the **next-day trading volume** for stocks following an earnings announcement, using only information available immediately after the earnings release.
     
-    - **Input Features:**  
-      A curated set of **financial ratios** (e.g., EV/EBITDA, Net Margin, Return on Assets) that are publicly disclosed at the time of the earnings report.
-    
-    - **Target Variable:**  
-      **Volume traded** on the trading day immediately after the earnings release.
-    
-    - **Model Selected:**  
-      **Random Forest Regressor**
-      - Captures **non-linear** interactions between financial ratios and trading behavior.
-      - Provides **robust predictions** while minimizing the risk of overfitting on historical patterns.
-      - Enables **interpretability** by ranking the importance of each financial feature.
-    
-    - **Training Strategy:**  
-      - Historical earnings and financial data were used to train the model across a wide range of technology-sector stocks.
-      - The dataset was split chronologically to simulate real-world prediction scenarios, ensuring that the model only learned from past data.
-    
-    - **Performance Metrics:**
-      - **R-squared:** 82%
-      - **Adjusted R-squared:** 81.5%
-      - **Mean Absolute Error (MAE):** ~3.2 million shares
-    
-    - **Why Random Forest?**
-      - Financial ratios often interact in complex, **non-linear** ways.
-      - Ensemble methods like Random Forest can **capture hidden interactions** that traditional models would miss.
-      - Feature importance rankings provide insights into which financial factors most strongly influence trading activity.
-    
-    """)
-
-
-    st.divider()
-
-    st.subheader("Feature Importance")
-
-    # --- Calculate feature importance
-    model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
-    importances = model.feature_importances_
-    sorted_idx = np.argsort(importances)[::-1]
-    sorted_features = np.array(selected_features)[sorted_idx]
-    sorted_importance = importances[sorted_idx]
-
-    # --- Plotly Bar Chart (sorted descending)
-    fig = go.Figure(go.Bar(
-        x=sorted_importance[::-1],
-        y=sorted_features[::-1],
-        orientation='h',
-        marker=dict(color='royalblue')
-    ))
-
-    fig.update_layout(
-        title="Top Feature Importances",
-        xaxis_title="Importance",
-        yaxis_title="Feature",
-        height=600,
-        template="plotly_white",
-        margin=dict(l=40, r=20, t=50, b=40)
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-    st.caption("""
-    **Interpretation:**  
-    - "Current Volume" is the strongest driver of post-earnings trading activity.
-    - Operational metrics like Return on Assets, EV/EBITDA, and EBITDA Margin also contribute meaningfully.
-    - Financial health indicators (e.g., Debt-to-Equity, Interest Coverage) play a secondary role.
-    """)
-
-    st.divider()
-
-    st.subheader("Model Limitations")
-    st.markdown("""
-    - **Sector Concentration:**  
-      Model was trained mainly on technology-sector stocks, limiting generalizability to other sectors (e.g., financials, energy).
-    
-    - **Limited Feature Set:**  
-      Only financial ratios were used; broader market events, news, or sentiment analysis were not included.
-    
-    - **Volume Volatility:**  
-      External shocks (e.g., major world news, lawsuits, mergers) can cause unpredictable volume spikes not captured by financial metrics.
-    
-    - **Data Quality Dependence:**  
-      Predictions are based on the accuracy and timeliness of financial disclosures. Delayed or erroneous filings can impact model reliability.
-    
-    - **No Price Prediction:**  
-      The model is designed to predict **volume activity only**, not stock price movement or volatility.
-    """)
-    
-    st.divider()
-    
-    st.subheader("Key Takeaways")
-    st.write("""
-    - Stocks with recent strong trading activity tend to exhibit larger post-earnings volume spikes.
-    - Companies with higher profitability and operational efficiency metrics show more predictable volume patterns.
-    - Financial fundamentals enhance prediction beyond technical trading patterns alone.
-    """)
-
 
 # Page 5: Top Stocks
 elif page == "Top Stocks by Volume":

@@ -501,65 +501,75 @@ elif page == "Volume Prediction":
         else:
             st.warning("No recent prediction data available for this ticker.")
 
-# Page 4: Feature Importance
 elif page == "Feature Importance":
     st.title("Model and Feature Insights")
 
     st.write("""
-    Our Random Forest Regressor predicts stock trading volume after earnings announcements, using key financial ratios.
+    The Random Forest model predicts next-day trading volume after earnings announcements, leveraging key financial ratios.
     """)
 
     st.divider()
 
     st.subheader("Model Overview")
     st.markdown("""
-    - **Target**: Trading volume after earnings release
-    - **Model**: Random Forest Regressor
-    - **Performance**:
-        - R-squared: 82%
-        - Adjusted R-squared: 81.5%
-        - MAE: ~3.2 million shares
+    - **Input:** Financial ratios available immediately after earnings.
+    - **Target:** Volume traded the day following earnings.
+    - **Model:** Random Forest Regressor
+      - Captures non-linear relationships
+      - Robust to overfitting
+      - Provides interpretable feature importance
+    - **Performance Metrics:**
+      - R-squared: **82%**
+      - Adjusted R-squared: **81.5%**
+      - Mean Absolute Error (MAE): **~3.2 million shares**
     """)
 
     st.divider()
 
     st.subheader("Feature Importance")
 
+    # --- Calculate feature importance
     model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
     importances = model.feature_importances_
     sorted_idx = np.argsort(importances)[::-1]
     sorted_features = np.array(selected_features)[sorted_idx]
     sorted_importance = importances[sorted_idx]
 
+    # --- Plotly Bar Chart (sorted descending)
     fig = go.Figure(go.Bar(
-        x=sorted_importance,
-        y=sorted_features,
+        x=sorted_importance[::-1],
+        y=sorted_features[::-1],
         orientation='h',
-        marker=dict(color='steelblue')
+        marker=dict(color='royalblue')
     ))
 
     fig.update_layout(
         title="Top Feature Importances",
         xaxis_title="Importance",
-        yaxis_title="Features",
-        height=500,
-        margin=dict(l=20, r=20, t=50, b=20),
-        template="plotly_white"
+        yaxis_title="Feature",
+        height=600,
+        template="plotly_white",
+        margin=dict(l=40, r=20, t=50, b=40)
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
     st.caption("""
-    "Current Volume" is the most important predictor, followed by financial health metrics like Return on Assets and EV/EBITDA.
+    **Interpretation:**  
+    - "Current Volume" is the strongest driver of post-earnings trading activity.
+    - Operational metrics like Return on Assets, EV/EBITDA, and EBITDA Margin also contribute meaningfully.
+    - Financial health indicators (e.g., Debt-to-Equity, Interest Coverage) play a secondary role.
     """)
 
     st.divider()
 
     st.subheader("Key Takeaways")
     st.write("""
-    - Stocks with high pre-earnings volume tend to experience bigger volume movements after announcements.
-    - Strong financial fundamentals make volume reactions more predictable.
+    - Stocks with recent strong trading activity tend to exhibit larger post-earnings volume spikes.
+    - Companies with higher profitability and operational efficiency metrics show more predictable volume patterns.
+    - Financial fundamentals enhance prediction beyond technical trading patterns alone.
     """)
+
 
 # Page 5: Top Stocks
 elif page == "Top Stocks by Volume":

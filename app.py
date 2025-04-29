@@ -34,7 +34,7 @@ st.markdown("""
 
 st.sidebar.title("App Navigation")
 
-page = st.sidebar.radio(
+page = st.sidebar.selectbox(
     label="",
     options=[
         "App Overview",
@@ -43,8 +43,7 @@ page = st.sidebar.radio(
         "Feature Importance",
         "Top Stocks by Volume"
     ],
-    label_visibility="collapsed",
-    index=0
+    label_visibility="collapsed"
 )
 
 

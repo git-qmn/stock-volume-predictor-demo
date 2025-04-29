@@ -503,32 +503,27 @@ elif page == "Volume Prediction":
 
 # Page 4: Feature Importance
 elif page == "Feature Importance":
-    st.title("Model Overview: Random Forest Regressor for Post-Earnings Volume Prediction")
+    st.title("Model and Feature Insights")
 
     st.write("""
-    We used a Random Forest Regressor to predict the **trading volume** following earnings releases.
-    This ensemble model captures non-linear relationships between financial ratios and post-earnings volume movements, balancing predictive accuracy with model interpretability.
+    Our Random Forest Regressor predicts stock trading volume after earnings announcements, using key financial ratios.
     """)
 
     st.divider()
 
-    st.subheader("How the Model Was Built")
+    st.subheader("Model Overview")
     st.markdown("""
-    - Trained using financial ratios available immediately after earnings announcements.
-    - Target variable: **Volume traded** the day following earnings.
-    - Model: **Random Forest Regressor**, chosen for:
-      - Handling non-linear interactions
-      - Robustness against overfitting
-      - Providing insight into feature importance
-    - Performance Metrics:
-      - **R-squared**: 82%
-      - **Adjusted R-squared**: 81.5%
-      - **Mean Absolute Error (MAE)**: ~3.2 million shares
+    - **Target**: Trading volume after earnings release
+    - **Model**: Random Forest Regressor
+    - **Performance**:
+        - R-squared: 82%
+        - Adjusted R-squared: 81.5%
+        - MAE: ~3.2 million shares
     """)
 
     st.divider()
 
-    st.subheader("Feature Importance Visualization")
+    st.subheader("Feature Importance")
 
     model = pipeline.named_steps['model'] if 'model' in pipeline.named_steps else pipeline.named_steps['randomforestregressor']
     importances = model.feature_importances_
@@ -536,25 +531,35 @@ elif page == "Feature Importance":
     sorted_features = np.array(selected_features)[sorted_idx]
     sorted_importance = importances[sorted_idx]
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.barh(sorted_features[::-1], sorted_importance[::-1])
-    ax.set_xlabel("Importance")
-    ax.set_title("Feature Importances")
-    st.pyplot(fig)
+    fig = go.Figure(go.Bar(
+        x=sorted_importance,
+        y=sorted_features,
+        orientation='h',
+        marker=dict(color='steelblue')
+    ))
+
+    fig.update_layout(
+        title="Top Feature Importances",
+        xaxis_title="Importance",
+        yaxis_title="Features",
+        height=500,
+        margin=dict(l=20, r=20, t=50, b=20),
+        template="plotly_white"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
 
     st.caption("""
-    **Feature Importance Interpretation:**  
-    "Current Volume" (previous day trading volume) was by far the most influential factor in predicting post-earnings volume, followed by financial strength metrics such as Return on Assets (ROA) and EV/EBITDA ratios.
+    "Current Volume" is the most important predictor, followed by financial health metrics like Return on Assets and EV/EBITDA.
     """)
 
     st.divider()
 
-    st.subheader("Key Insights")
+    st.subheader("Key Takeaways")
     st.write("""
-    - Stocks with higher trading volumes before earnings tend to have stronger reactions after earnings.
-    - Financial health indicators such as **Return on Assets**, **EV/EBITDA**, and **Net Margin** contribute to the predictability of volume surges.
+    - Stocks with high pre-earnings volume tend to experience bigger volume movements after announcements.
+    - Strong financial fundamentals make volume reactions more predictable.
     """)
-
 
 # Page 5: Top Stocks
 elif page == "Top Stocks by Volume":

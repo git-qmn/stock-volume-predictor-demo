@@ -591,19 +591,11 @@ elif page == "Feature Importance":
 #     st.warning("No volume data available.")
 
 elif page == "Top Stocks by Volume":
-    import plotly.graph_objects as go
-    import yfinance as yf
-    import pandas as pd
-    import streamlit as st
-
     st.title("Top 5 Traded Stocks in the Past 3 Months")
     st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
-
-    # --- Setup
     tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
     end_date = pd.to_datetime("today")
     start_date = end_date - pd.Timedelta(days=90)
-
     fig = go.Figure()
     volume_frames = []
 
@@ -624,7 +616,7 @@ elif page == "Top Stocks by Volume":
 
     # --- Display Line Chart
     fig.update_layout(
-        title="Daily Trading Volume (in Millions) - Past 3 Months",
+        title="Volume Traded (in Millions) Over the Past 3 Months",
         xaxis_title="Date",
         yaxis_title="Volume (Millions)",
         template="plotly_white",
@@ -633,7 +625,7 @@ elif page == "Top Stocks by Volume":
         legend_title="Stock Ticker",
         xaxis_rangeslider_visible=False
     )
-
+    
     st.plotly_chart(fig, use_container_width=True)
 
     st.divider()

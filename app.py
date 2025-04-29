@@ -643,30 +643,30 @@ if volume_data:
     for ticker, df in volume_data.items():
         df = df.reset_index()
         df['Ticker'] = ticker
-        if 'Datetime' in df.columns:
-            df = df.rename(columns={'Datetime': 'Date'})
-        elif 'index' in df.columns:
-            df = df.rename(columns={'index': 'Date'})
+        df = df.rename(columns={df.columns[0]: 'Date'})
         all_data.append(df[['Date', 'Ticker', 'Volume']])
 
     combined_df = pd.concat(all_data, ignore_index=True)
 
-    # --- Fix Date Format ---
+    # --- Clean and Fix ---
     combined_df['Date'] = pd.to_datetime(combined_df['Date']).dt.date
 
-    # --- Now use pivot_table with sum ---
+    # Now pivot correctly
     pivot_df = combined_df.pivot_table(
         index='Date',
         columns='Ticker',
         values='Volume',
-        aggfunc='sum'   # <-- allow aggregation if duplicate timestamps exist
+        aggfunc='sum'
     )
 
     pivot_df = pivot_df.sort_index(ascending=False)
-    pivot_df.columns.name = None  # Clean column header
+    pivot_df.columns.name = None  # Remove column name (Ticker)
+    pivot_df = pivot_df.reset_index()  # Make Date a normal column
+
     st.dataframe(pivot_df.head(5))
 else:
     st.warning("No volume data available.")
+
 
 
 

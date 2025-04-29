@@ -635,27 +635,28 @@ elif page == "Top Stocks by Volume":
 #     # Show last 5 dates
 #     st.dataframe(pivot_df.head(5))
 
-    # --- Last Few Entries ---
-    st.subheader("Recent Volume Data")
+# --- Last Few Entries ---
+st.subheader("Recent Volume Data")
+
+if volume_data:
+    # Properly combine ticker data
+    combined_df = pd.concat(
+        [
+            df.assign(Ticker=ticker).reset_index()[['Date', 'Ticker', 'Volume']] 
+            for ticker, df in volume_data.items()
+        ],
+        ignore_index=True
+    )
     
-    if volume_data:
-        # Properly combine ticker data
-        combined_df = pd.concat(
-            [
-                df.assign(Ticker=ticker).reset_index()[['Date', 'Ticker', 'Volume']] 
-                for ticker, df in volume_data.items()
-            ],
-            ignore_index=True
-        )
-        
-        # Pivot: rows = Date, columns = Ticker
-        pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume')
-        
-        # Sort by most recent
-        pivot_df = pivot_df.sort_index(ascending=False)
-        
-        # Display last 5 rows
-        st.dataframe(pivot_df.head(5))
-    else:
-        st.warning("No volume data available.")
+    # Pivot: rows = Date, columns = Ticker
+    pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume')
+    
+    # Sort by most recent
+    pivot_df = pivot_df.sort_index(ascending=False)
+    
+    # Display last 5 rows
+    st.dataframe(pivot_df.head(5))
+else:
+    st.warning("No volume data available.")
+
 

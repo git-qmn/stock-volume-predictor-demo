@@ -599,7 +599,9 @@ elif page == "Feature Importance":
     - **No Price Prediction:**  
       The model is designed to predict **volume activity only**, not stock price movement or volatility.
     """)
-
+    
+    st.divider()
+    
     st.subheader("Key Takeaways")
     st.write("""
     - Stocks with recent strong trading activity tend to exhibit larger post-earnings volume spikes.

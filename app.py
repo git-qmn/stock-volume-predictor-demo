@@ -519,118 +519,118 @@ elif page == "Feature Importance":
     st.pyplot(fig)
 
 # Page 5: Top Stocks
-# elif page == "Top Stocks by Volume":
-#     st.title("Top 5 Traded Stocks in the Past 3 Months")
-#     st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
-
-#     tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
-#     end_date = pd.to_datetime("today")
-#     start_date = end_date - pd.Timedelta(days=90)
-
-#     fig, ax = plt.subplots(figsize=(12, 6))
-#     volume_data = {}
-
-#     for ticker in tickers:
-#         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
-#         if not df.empty:
-#             volume_in_millions = df['Volume'] / 1_000_000
-#             ax.plot(df.index, volume_in_millions, label=ticker)
-#             volume_data[ticker] = df[['Volume']]
-
-#     ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
-#     ax.set_xlabel("Date")
-#     ax.set_ylabel("Volume (Millions)")
-#     ax.legend()
-#     st.pyplot(fig)
-
-
-# st.subheader("Recent Volume Data")
-# if volume_data:
-#     combined_df = pd.concat(
-#         [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
-#     )
-#     combined_df = combined_df.reset_index()
-#     pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
-#     pivot_df = pivot_df.sort_index(ascending=False)
-#     st.dataframe(pivot_df.head(5))
-# else:
-#     st.warning("No volume data available.")
-
-#     st.subheader("Last Few Entries for Each Stock's Volume Data")
-#     # Combine all tickers into one DataFrame
-#     combined_df = pd.concat(
-#         [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
-#     )
-    
-#     # Reset index to prepare for pivoting
-#     combined_df = combined_df.reset_index()
-    
-#     # Ensure all dates are present for each ticker
-#     # Fill missing dates with NaN volumes
-#     pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
-
-#     # Sort by date
-#     pivot_df = pivot_df.sort_index(ascending=False)
-    
-#     # Flatten the multi-level columns
-#     pivot_df.columns = pivot_df.columns.get_level_values(0)  # This flattens MultiIndex columns
-    
-#     # Show last 5 dates
-#     st.dataframe(pivot_df.head(5))
-
-
-# QUAN"S
 elif page == "Top Stocks by Volume":
     st.title("Top 5 Traded Stocks in the Past 3 Months")
     st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
+
     tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
     end_date = pd.to_datetime("today")
     start_date = end_date - pd.Timedelta(days=90)
-    fig = go.Figure()
-    volume_frames = []
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    volume_data = {}
 
     for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
-            df['Volume_Millions'] = df['Volume'] / 1_000_000
-            fig.add_trace(go.Scatter(
-                x=df.index,
-                y=df['Volume_Millions'],
-                mode='lines',
-                name=ticker
-            ))
-            # Save for table (no extra ticker column needed)
-            df = df[['Volume']].copy()
-            df.columns = [ticker]  # Rename 'Volume' column to ticker name
-            volume_frames.append(df)
+            volume_in_millions = df['Volume'] / 1_000_000
+            ax.plot(df.index, volume_in_millions, label=ticker)
+            volume_data[ticker] = df[['Volume']]
 
-    # --- Display Line Chart
-    fig.update_layout(
-        title="Volume Traded (in Millions) Over the Past 3 Months",
-        xaxis_title="Date",
-        yaxis_title="Volume (Millions)",
-        template="plotly_white",
-        height=500,
-        margin=dict(l=20, r=20, t=50, b=20),
-        legend_title="Stock Ticker",
-        xaxis_rangeslider_visible=False
+    ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Volume (Millions)")
+    ax.legend()
+    st.pyplot(fig)
+
+
+st.subheader("Recent Volume Data")
+if volume_data:
+    combined_df = pd.concat(
+        [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
+    )
+    combined_df = combined_df.reset_index()
+    pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
+    pivot_df = pivot_df.sort_index(ascending=False)
+    st.dataframe(pivot_df.head(5))
+else:
+    st.warning("No volume data available.")
+
+    st.subheader("Last Few Entries for Each Stock's Volume Data")
+    # Combine all tickers into one DataFrame
+    combined_df = pd.concat(
+        [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    # Reset index to prepare for pivoting
+    combined_df = combined_df.reset_index()
+    
+    # Ensure all dates are present for each ticker
+    # Fill missing dates with NaN volumes
+    pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
 
-    st.divider()
+    # Sort by date
+    pivot_df = pivot_df.sort_index(ascending=False)
+    
+    # Flatten the multi-level columns
+    pivot_df.columns = pivot_df.columns.get_level_values(0)  # This flattens MultiIndex columns
+    
+    # Show last 5 dates
+    st.dataframe(pivot_df.head(5))
 
-    # --- Clean Recent Volume Table
-    st.subheader("Recent Volume Data (Last 5 Days)")
 
-    if volume_frames:
-        combined_df = pd.concat(volume_frames, axis=1)
-        combined_df.index = pd.to_datetime(combined_df.index).date
-        combined_df = combined_df.sort_index(ascending=False)
+# # QUAN"S
+# elif page == "Top Stocks by Volume":
+#     st.title("Top 5 Traded Stocks in the Past 3 Months")
+#     st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
+#     tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
+#     end_date = pd.to_datetime("today")
+#     start_date = end_date - pd.Timedelta(days=90)
+#     fig = go.Figure()
+#     volume_frames = []
 
-        st.dataframe(combined_df.head(5))
-    else:
-        st.warning("No volume data available.")
+#     for ticker in tickers:
+#         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
+#         if not df.empty:
+#             df['Volume_Millions'] = df['Volume'] / 1_000_000
+#             fig.add_trace(go.Scatter(
+#                 x=df.index,
+#                 y=df['Volume_Millions'],
+#                 mode='lines',
+#                 name=ticker
+#             ))
+#             # Save for table (no extra ticker column needed)
+#             df = df[['Volume']].copy()
+#             df.columns = [ticker]  # Rename 'Volume' column to ticker name
+#             volume_frames.append(df)
+
+#     # --- Display Line Chart
+#     fig.update_layout(
+#         title="Volume Traded (in Millions) Over the Past 3 Months",
+#         xaxis_title="Date",
+#         yaxis_title="Volume (Millions)",
+#         template="plotly_white",
+#         height=500,
+#         margin=dict(l=20, r=20, t=50, b=20),
+#         legend_title="Stock Ticker",
+#         xaxis_rangeslider_visible=False
+#     )
+    
+#     st.plotly_chart(fig, use_container_width=True)
+
+#     st.divider()
+
+#     # --- Clean Recent Volume Table
+#     st.subheader("Recent Volume Data (Last 5 Days)")
+
+#     if volume_frames:
+#         combined_df = pd.concat(volume_frames, axis=1)
+#         combined_df.index = pd.to_datetime(combined_df.index).date
+#         combined_df = combined_df.sort_index(ascending=False)
+
+#         st.dataframe(combined_df.head(5))
+#     else:
+#         st.warning("No volume data available.")
 
 
 

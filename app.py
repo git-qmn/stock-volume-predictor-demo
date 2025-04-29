@@ -635,11 +635,8 @@ elif page == "Top Stocks by Volume":
 
     if volume_frames:
         combined_df = pd.concat(volume_frames, axis=1)
-        combined_df.index = pd.to_datetime(combined_df.index).date  # Clean Date
+        combined_df.index = pd.to_datetime(combined_df.index).date
         combined_df = combined_df.sort_index(ascending=False)
-
-        # Convert all volumes to Millions
-        combined_df = combined_df / 1_000_000
 
         st.dataframe(combined_df.head(5))
     else:

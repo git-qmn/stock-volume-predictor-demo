@@ -607,21 +607,22 @@ elif page == "Top Stocks by Volume":
     fig = go.Figure()
     volume_frames = []
 
-    # --- Download and Plot
     for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
             df['Volume_Millions'] = df['Volume'] / 1_000_000
-            df['Ticker'] = ticker
             fig.add_trace(go.Scatter(
                 x=df.index,
                 y=df['Volume_Millions'],
                 mode='lines',
                 name=ticker
             ))
-            volume_frames.append(df[['Volume', 'Ticker']].reset_index())  # Save for table
+            # Save for table (no extra ticker column needed)
+            df = df[['Volume']].copy()
+            df.columns = [ticker]  # Rename 'Volume' column to ticker name
+            volume_frames.append(df)
 
-    # --- Display Plot
+    # --- Display Line Chart
     fig.update_layout(
         title="Daily Trading Volume (in Millions) - Past 3 Months",
         xaxis_title="Date",
@@ -637,34 +638,21 @@ elif page == "Top Stocks by Volume":
 
     st.divider()
 
-    # --- Recent Volume Table
+    # --- Clean Recent Volume Table
     st.subheader("Recent Volume Data (Last 5 Days)")
 
     if volume_frames:
-        combined_df = pd.concat(volume_frames, ignore_index=True)
+        combined_df = pd.concat(volume_frames, axis=1)
+        combined_df.index = pd.to_datetime(combined_df.index).date  # Clean Date
+        combined_df = combined_df.sort_index(ascending=False)
 
-        # Clean Date
-        combined_df['Date'] = pd.to_datetime(combined_df['Date']).dt.date
+        # Convert all volumes to Millions
+        combined_df = combined_df / 1_000_000
 
-        # Pivot clean
-        pivot_df = combined_df.pivot_table(
-            index='Date',
-            columns='Ticker',
-            values='Volume',
-            aggfunc='sum'
-        )
-
-        pivot_df = pivot_df.sort_index(ascending=False)
-
-        # Format volume in millions
-        pivot_df = pivot_df / 1_000_000
-
-        pivot_df.columns.name = None
-        pivot_df = pivot_df.reset_index()
-
-        st.dataframe(pivot_df.head(5))
+        st.dataframe(combined_df.head(5))
     else:
         st.warning("No volume data available.")
+
 
 
 

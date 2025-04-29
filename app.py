@@ -403,7 +403,7 @@ elif page == "Volume Prediction":
             col1, col2 = st.columns(2)
             
             with col1:
-                st.markdown(f"**Prediction Date:** {ticker_data['date'].values[0]}")
+                st.markdown(f"**Earnings Release Date:** {ticker_data['date'].values[0]}")
                 st.markdown(f"**Predicted Volume:** {int(prediction):,}")
                 st.markdown(f"**Percent Difference:** {percent_diff:.2f}%")
             

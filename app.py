@@ -640,32 +640,34 @@ st.subheader("Recent Volume Data")
 
 if volume_data:
     all_data = []
+
     for ticker, df in volume_data.items():
         df = df.reset_index()
         df['Ticker'] = ticker
-        df = df.rename(columns={df.columns[0]: 'Date'})
+        df.rename(columns={df.columns[0]: 'Date'}, inplace=True)
         all_data.append(df[['Date', 'Ticker', 'Volume']])
 
     combined_df = pd.concat(all_data, ignore_index=True)
 
-    # --- Clean and Fix ---
+    # Clean dates
     combined_df['Date'] = pd.to_datetime(combined_df['Date']).dt.date
 
-    # Now pivot correctly
-    pivot_df = combined_df.pivot_table(
-        index='Date',
-        columns='Ticker',
-        values='Volume',
-        aggfunc='sum'
-    )
+    # Manual pivoting: pure DataFrame
+    clean_table = combined_df.pivot(index='Date', columns='Ticker', values='Volume')
 
-    pivot_df = pivot_df.sort_index(ascending=False)
-    pivot_df.columns.name = None  # Remove column name (Ticker)
-    pivot_df = pivot_df.reset_index()  # Make Date a normal column
+    # Reset index to bring Date as column
+    clean_table = clean_table.reset_index()
 
-    st.dataframe(pivot_df.head(5))
+    # Sort newest first
+    clean_table = clean_table.sort_values('Date', ascending=False)
+
+    # Drop any multiindex name if exists
+    clean_table.columns.name = None
+
+    st.dataframe(clean_table.head(5))
 else:
     st.warning("No volume data available.")
+
 
 
 

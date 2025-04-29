@@ -520,28 +520,98 @@ elif page == "Feature Importance":
 
 # Page 5: Top Stocks
 elif page == "Top Stocks by Volume":
-    st.title("Top 5 Traded Stocks in the Past 3 Months")
-    st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
+    # st.title("Top 5 Traded Stocks in the Past 3 Months")
+    # st.markdown("Displays the daily volume traded over the past 90 days for 5 selected major stocks.")
 
+    # tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
+    # end_date = pd.to_datetime("today")
+    # start_date = end_date - pd.Timedelta(days=90)
+
+    # fig, ax = plt.subplots(figsize=(12, 6))
+    # volume_data = {}
+
+    # for ticker in tickers:
+    #     df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
+    #     if not df.empty:
+    #         volume_in_millions = df['Volume'] / 1_000_000
+    #         ax.plot(df.index, volume_in_millions, label=ticker)
+    #         volume_data[ticker] = df[['Volume']]
+
+    # ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
+    # ax.set_xlabel("Date")
+    # ax.set_ylabel("Volume (Millions)")
+    # ax.legend()
+    # st.pyplot(fig)
+
+    st.title("Top 5 Traded Stocks by Volume")
+    st.markdown("Analyze the daily trading volume of major tech stocks over different timeframes.")
+    
+    # --- Select Time Range ---
+    volume_time_range_top = st.selectbox(
+        "Select time range for trading volume:", 
+        options=["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "Max"], 
+        index=2
+    )
+    
+    volume_time_mapping_top = {
+        "1D": ("1d", "5m"),
+        "5D": ("5d", "15m"),
+        "1M": ("1mo", "1d"),
+        "6M": ("6mo", "1d"),
+        "YTD": ("ytd", "1d"),
+        "1Y": ("1y", "1d"),
+        "5Y": ("5y", "1wk"),
+        "Max": ("max", "1mo")
+    }
+    
+    period, interval = volume_time_mapping_top.get(volume_time_range_top, ("1mo", "1d"))
+    
     tickers = ['AAPL', 'MSFT', 'TSLA', 'NVDA', 'GOOGL']
-    end_date = pd.to_datetime("today")
-    start_date = end_date - pd.Timedelta(days=90)
-
-    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    # --- Download Data ---
     volume_data = {}
-
+    fig = go.Figure()
+    
     for ticker in tickers:
-        df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
+        df = yf.download(ticker, period=period, interval=interval, progress=False)
         if not df.empty:
-            volume_in_millions = df['Volume'] / 1_000_000
-            ax.plot(df.index, volume_in_millions, label=ticker)
+            df['Volume_Millions'] = df['Volume'] / 1_000_000
+            fig.add_trace(go.Scatter(
+                x=df.index,
+                y=df['Volume_Millions'],
+                mode='lines',
+                name=ticker
+            ))
             volume_data[ticker] = df[['Volume']]
+    
+    # --- Plotly Chart ---
+    fig.update_layout(
+        title=f"Trading Volume (in Millions) Over {volume_time_range}",
+        xaxis_title="Date",
+        yaxis_title="Volume (Millions)",
+        height=500,
+        margin=dict(l=20, r=20, t=50, b=20),
+        legend_title="Ticker",
+        template="plotly_white",
+        xaxis_rangeslider_visible=False
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
 
-    ax.set_title("Volume Traded (in Millions) Over the Past 3 Months")
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Volume (Millions)")
-    ax.legend()
-    st.pyplot(fig)
+# --- Last Few Entries ---
+st.subheader("Recent Volume Data")
+if volume_data:
+    combined_df = pd.concat(
+        [data.assign(Ticker=ticker) for ticker, data in volume_data.items()]
+    )
+    combined_df = combined_df.reset_index()
+    pivot_df = combined_df.pivot_table(index='Date', columns='Ticker', values='Volume', aggfunc='first')
+    pivot_df = pivot_df.sort_index(ascending=False)
+    st.dataframe(pivot_df.head(5))
+else:
+    st.warning("No volume data available.")
+
+    
 
     st.subheader("Last Few Entries for Each Stock's Volume Data")
     # Combine all tickers into one DataFrame

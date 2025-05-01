@@ -423,6 +423,7 @@ elif page == "Volume Prediction":
                     st.markdown(f"**Volume Change vs Avg.:** N/A")
 
             st.divider()
+            """
             # --- Recent Volume Chart ---
             st.subheader("Recent Trading Volume")
             
@@ -465,6 +466,7 @@ elif page == "Volume Prediction":
                 st.plotly_chart(fig_vol, use_container_width=True)
             else:
                 st.warning("No volume data available for this time range.")
+            """
             
             st.divider()
 

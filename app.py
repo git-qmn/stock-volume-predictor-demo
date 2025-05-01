@@ -307,6 +307,7 @@ elif page == "Volume Prediction":
 
         st.divider()
 
+        """
         # --- Recent Stock Price Chart ---
         st.subheader("Recent Stock Price")
         
@@ -382,9 +383,9 @@ elif page == "Volume Prediction":
             st.markdown(f"**Forward Dividend & Yield:** {info.get('dividendRate', 'N/A')} ({info.get('dividendYield', 'N/A')})")
             st.markdown(f"**Ex-Dividend Date:** {info.get('exDividendDate', 'N/A')}")
             st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
-
+        """
         st.divider()
-
+        
 # --- Volume Prediction Summary ---
     with tab2:
         st.header("Volume Prediction Summary")

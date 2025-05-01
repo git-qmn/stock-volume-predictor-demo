@@ -559,7 +559,7 @@ elif page == "Top Stocks by Volume":
     fig = go.Figure()
     volume_frames = []
 
-   """ for ticker in tickers:
+    """ for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
             df['Volume_Millions'] = df['Volume'] / 1_000_000
@@ -602,7 +602,7 @@ elif page == "Top Stocks by Volume":
         st.dataframe(combined_df.head(5))
     else:
         st.warning("No volume data available.")
-        """
+    """
 
 
 

@@ -1,8 +1,6 @@
 import streamlit as st
 st.set_page_config(page_title="Earnings Volume Predictor", layout="wide")
 
-st.write(f"yfinance version: {yfinance.__version__}")
-
 import pandas as pd
 import numpy as np
 import joblib

@@ -47,29 +47,55 @@ page = st.sidebar.selectbox(
 
 
 # Get financial ratios from yfinance
+# def get_financial_ratios(ticker):
+#     stock = yf.Ticker(ticker)
+#     info = stock.info
+
+#     try:
+#         ratios = {
+#             'EV/EBITDA': info.get('enterpriseValue', 0) / info.get('marketCap', 1) if info.get('marketCap') else 0,
+#             'P/E Ratio': info.get('trailingPE', 0),
+#             'P/S Ratio': info.get('priceToSalesTrailing12Months', 0),
+#             'Net Margin': info.get('netMargins', 0),
+#             'EBITDA Margin': info.get('operatingMargins', 0),
+#             'Return on Assets': info.get('returnOnAssets', 0),
+#             'Return on Equity': info.get('returnOnEquity', 0),
+#             'Debt-to-Equity': info.get('debtToEquity', 0),
+#             'Interest Coverage': info.get('ebitdaMargins', 0),
+#             'Quick Ratio': info.get('quickRatio', 0),
+#             'Current Ratio': info.get('currentRatio', 0),
+#             'Asset Turnover': info.get('returnOnAssets', 0),
+#             'Price-to-Book': info.get('priceToBook', 0)
+#         }
+#         return pd.DataFrame([ratios])
+#     except Exception:
+#         return None
+
 def get_financial_ratios(ticker):
     stock = yf.Ticker(ticker)
-    info = stock.info
 
     try:
+        fast = stock.fast_info
+
         ratios = {
-            'EV/EBITDA': info.get('enterpriseValue', 0) / info.get('marketCap', 1) if info.get('marketCap') else 0,
-            'P/E Ratio': info.get('trailingPE', 0),
-            'P/S Ratio': info.get('priceToSalesTrailing12Months', 0),
-            'Net Margin': info.get('netMargins', 0),
-            'EBITDA Margin': info.get('operatingMargins', 0),
-            'Return on Assets': info.get('returnOnAssets', 0),
-            'Return on Equity': info.get('returnOnEquity', 0),
-            'Debt-to-Equity': info.get('debtToEquity', 0),
-            'Interest Coverage': info.get('ebitdaMargins', 0),
-            'Quick Ratio': info.get('quickRatio', 0),
-            'Current Ratio': info.get('currentRatio', 0),
-            'Asset Turnover': info.get('returnOnAssets', 0),
-            'Price-to-Book': info.get('priceToBook', 0)
+            'Market Cap': fast.get('market_cap'),
+            'PE Ratio': fast.get('pe_ratio'),
+            'Dividend Yield': fast.get('dividend_yield'),
+            'Previous Close': fast.get('previous_close'),
+            'Open': fast.get('open'),
+            'Day High': fast.get('day_high'),
+            'Day Low': fast.get('day_low'),
+            '52 Week High': fast.get('year_high'),
+            '52 Week Low': fast.get('year_low'),
+            'Volume': fast.get('last_volume'),
+            'Average Volume': fast.get('ten_day_average_volume')
         }
+
         return pd.DataFrame([ratios])
-    except Exception:
-        return None
+    except Exception as e:
+        st.warning(f"Could not fetch data for {ticker}. Error: {e}")
+        return pd.DataFrame([{'Error': 'Data unavailable'}])
+
         
 # Page 1: Overview
 if page == "App Overview":

@@ -3,7 +3,7 @@ pandas
 numpy
 scikit-learn
 xgboost
-yfinance>=0.2.55
+yfinance>=0.2.54
 matplotlib
 joblib
 plotly

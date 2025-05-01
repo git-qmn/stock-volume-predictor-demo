@@ -258,7 +258,11 @@ elif page == "Volume Prediction":
         st.header(f"{ticker} - Company Snapshot")
 
         stock = yf.Ticker(ticker)
-        info = stock.info
+        try:
+            info = stock.info
+        except Exception:
+            info = {} 
+        
         # --- Company Overview Section ---
         st.subheader(f"{info.get('longName', ticker)} Overview")
         

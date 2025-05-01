@@ -307,7 +307,6 @@ elif page == "Volume Prediction":
 
         st.divider()
 
-        """
         # --- Recent Stock Price Chart ---
         st.subheader("Recent Stock Price")
         
@@ -383,7 +382,7 @@ elif page == "Volume Prediction":
             st.markdown(f"**Forward Dividend & Yield:** {info.get('dividendRate', 'N/A')} ({info.get('dividendYield', 'N/A')})")
             st.markdown(f"**Ex-Dividend Date:** {info.get('exDividendDate', 'N/A')}")
             st.markdown(f"**1Y Target Est:** {info.get('targetMeanPrice', 'N/A')}")
-        """
+            
         st.divider()
         
 # --- Volume Prediction Summary ---
@@ -424,7 +423,7 @@ elif page == "Volume Prediction":
                     st.markdown(f"**Volume Change vs Avg.:** N/A")
 
             st.divider()
-            """
+    
             # --- Recent Volume Chart ---
             st.subheader("Recent Trading Volume")
             
@@ -467,7 +466,7 @@ elif page == "Volume Prediction":
                 st.plotly_chart(fig_vol, use_container_width=True)
             else:
                 st.warning("No volume data available for this time range.")
-            """
+        
             
             st.divider()
 
@@ -562,7 +561,7 @@ elif page == "Top Stocks by Volume":
     fig = go.Figure()
     volume_frames = []
 
-    """ for ticker in tickers:
+    for ticker in tickers:
         df = yf.download(ticker, start=start_date, end=end_date, interval='1d', progress=False)
         if not df.empty:
             df['Volume_Millions'] = df['Volume'] / 1_000_000
@@ -605,12 +604,3 @@ elif page == "Top Stocks by Volume":
         st.dataframe(combined_df.head(5))
     else:
         st.warning("No volume data available.")
-    """
-
-
-
-
-
-
-
-
